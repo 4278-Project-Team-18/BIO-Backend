@@ -1,11 +1,16 @@
 {
-  "name": "nodejs-express",
+  "name": "bio-backend",
   "version": "1.0.0",
-  "description": "Backend",
+  "description": "Backend for the BIO application",
   "main": "index.ts",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "prepare": "husky install",
+    "typescript:check": "tsc --esModuleInterop",
+    "lint:check": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "prettier:format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
+    "prettier:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,md}'"
   },
   "keywords": [],
   "author": "",
@@ -13,15 +18,26 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "helmet": "^7.0.0",
     "mongoose": "^7.5.1",
     "nodemon": "^3.0.1",
+    "nyc": "^15.1.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.0",
+    "@types/supertest": "^2.0.12",
+    "chai": "^4.3.8",
+    "chai-http": "^4.4.0",
     "eslint": "^8.49.0",
-    "husky": "^8.0.3",
-    "prettier": "^3.0.3"
+    "eslint-plugin-autofix": "^1.1.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-react": "^7.33.2",
+    "husky": "^8.0.0",
+    "mocha": "^10.2.0",
+    "prettier": "^3.0.3",
+    "supertest": "^6.3.3"
   }
 }
