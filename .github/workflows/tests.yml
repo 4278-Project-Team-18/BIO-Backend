@@ -1,26 +1,79 @@
-name: Run tests
+name: Backend Testing
 
 on:
   push:
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
-  build:
+  backend-tests:
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [10.x, 12.x, 14.x, 15.x]
+        node-version: [19.x]
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
-      - run: npm ci
+      - name: Run CI
+        run: npm ci
 
-      - run: npm run test
+
+      - name: pull_request:un tests
+        run: npm run tests
+
+  prettier-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run CI
+        run: npm ci
+
+      - name: Run prettier-check
+        run: npm run format:check
+
+  eslint-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run CI
+        run: npm ci
+
+      - name: Run eslint
+        run: npm run lint:check
+    
+  typescript-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Run CI
+        run: npm ci
+
+      - name: Run typescript-check
+        run: npm run typescript:check
