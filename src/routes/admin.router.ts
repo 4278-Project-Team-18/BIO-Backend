@@ -3,7 +3,7 @@ import express from 'express';
 
 const adminRouter = express.Router();
 
-/* Ping Controller */
+/* Admin Controller */
 adminRouter.post('/createAdmin', createAdmin);
 
 export = adminRouter;

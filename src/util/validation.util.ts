@@ -29,7 +29,6 @@ export const verifyKeys = (obj: any, keys: string[][]): string => {
   const extraKeysString =
     extraKeys.length > 0 ? 'Extra keys: ' + extraKeys.join(', ') + '.' : '';
 
-  console.log(missingKeysString + extraKeysString);
   return missingKeysString + extraKeysString;
 };
 

@@ -1,19 +1,14 @@
 import connectToMongoDB from './config/mongodb.config';
-import adminRouter from './routes/admin.router';
-import express from 'express';
+import createServer from './config/server.config';
 
 // connect to mongo db
 connectToMongoDB();
 
 // create our server
-const app = express();
-
-app.use(express.json());
+const app = createServer();
 
 // define our port
 const port = process.env.PORT || 3000;
-
-app.use('/admin', adminRouter);
 
 // start our server
 app.listen(port, () => {

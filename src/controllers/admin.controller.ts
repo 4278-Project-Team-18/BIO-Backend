@@ -7,7 +7,7 @@ export const createAdmin = async (req: Request, res: Response) => {
   const admin = req.body;
 
   // check if admin object is provided
-  if (!admin) {
+  if (!admin || Object.keys(admin).length === 0) {
     return res.status(400).json({ error: 'No admin object provided.' });
   }
 
