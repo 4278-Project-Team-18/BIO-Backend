@@ -1,6 +1,11 @@
 /* eslint-disable no-prototype-builtins */
 
-import { ADMIN_ALL_KEYS, ADMIN_REQUIRED_KEYS, STUDENT_ALL_KEYS, STUDENT_REQUIRED_KEYS } from './constants';
+import {
+  ADMIN_ALL_KEYS,
+  ADMIN_REQUIRED_KEYS,
+  STUDENT_ALL_KEYS,
+  STUDENT_REQUIRED_KEYS,
+} from './constants';
 
 /**
  * Verifies if a given object has all the specified keys. Will return a formatted string of any missing or extra keys.
