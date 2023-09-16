@@ -2,10 +2,10 @@
   "name": "bio-backend",
   "version": "1.0.0",
   "description": "Backend for the BIO application",
-  "main": "index.ts",
+  "main": "src/index.ts",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "ts-node --esm src/index.ts",
+    "dev": "nodemon src/index.ts",
     "prepare": "husky install",
     "typescript:check": "tsc --esModuleInterop",
     "lint:check": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -26,6 +26,7 @@
     "typescript": "^5.2.2"
   },
   "devDependencies": {
+    "@types/express": "^4.17.17",
     "@types/mocha": "^10.0.1",
     "@types/node": "^20.6.0",
     "@types/supertest": "^2.0.12",
