@@ -29,6 +29,9 @@ jobs:
 
       - name: Run testing suite
         run: npm run test
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+          PORT: ${{ secrets.PORT }}
 
   prettier-check:
     runs-on: ubuntu-latest

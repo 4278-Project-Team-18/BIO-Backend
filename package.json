@@ -7,7 +7,7 @@
     "start": "ts-node --esm src/index.ts",
     "dev": "nodemon src/index.ts",
     "prepare": "husky install",
-    "test": "ENVIRONMENT=test nyc mocha -r dotenv/config --timeout 20000 --exit -r ts-node/register src/tests/*.tests.ts",
+    "test": "nyc mocha -r dotenv/config --timeout 20000 --exit -r ts-node/register src/tests/*.tests.ts",
     "typescript:check": "tsc --esModuleInterop",
     "lint:check": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "prettier:format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
