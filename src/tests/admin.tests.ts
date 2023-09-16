@@ -33,11 +33,11 @@ after(async () => {
   }
 });
 
-describe('🧪 Test POST /admin/createAdmin', () => {
+describe('🧪 Test POST /admin/', () => {
   it('should successfully create admin', done => {
     chai
       .request(server)
-      .post('/admin/createAdmin/')
+      .post('/admin/')
       .send(TEST_ADMIN)
       .then(res => {
         // check for response
@@ -68,7 +68,7 @@ describe('🧪 Test POST /admin/createAdmin', () => {
   it('should return 400 if no admin object provided', done => {
     chai
       .request(server)
-      .post('/admin/createAdmin/')
+      .post('/admin/')
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
@@ -89,7 +89,7 @@ describe('🧪 Test POST /admin/createAdmin', () => {
   it('should return 400 if keys are missing', done => {
     chai
       .request(server)
-      .post('/admin/createAdmin/')
+      .post('/admin/')
       .send({
         email: TEST_ADMIN.email,
         lastName: TEST_ADMIN.lastName,

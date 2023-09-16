@@ -4,6 +4,6 @@ import express from 'express';
 const adminRouter = express.Router();
 
 /* Admin Controller */
-adminRouter.post('/createAdmin', createAdmin);
+adminRouter.post('/', createAdmin);
 
 export = adminRouter;
