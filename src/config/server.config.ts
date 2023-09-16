@@ -1,5 +1,5 @@
 import adminRouter from '../routes/admin.router';
-import studentRouter from '../routes/admin.router';
+import studentRouter from '../routes/student.router';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
