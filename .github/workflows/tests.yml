@@ -27,8 +27,8 @@ jobs:
         run: npm ci
 
 
-      - name: pull_request:un tests
-        run: npm run tests
+      - name: Run testing suite
+        run: npm run test
 
   prettier-check:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
       - name: Run CI
         run: npm ci
 
-      - name: Run prettier-check
+      - name: Run Prettier Check
         run: npm run prettier:check
 
   eslint-check:
@@ -59,7 +59,7 @@ jobs:
       - name: Run CI
         run: npm ci
 
-      - name: Run eslint
+      - name: Run Eslint Check
         run: npm run lint:check
     
   typescript-check:
@@ -75,5 +75,5 @@ jobs:
       - name: Run CI
         run: npm ci
 
-      - name: Run typescript-check
+      - name: Run Typescript Check
         run: npm run typescript:check
