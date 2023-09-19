@@ -11,6 +11,7 @@ Node.js and express backend for the BIO project.
 ## Todo list of endpoints
 
 #### Admin tasks
+[ADMIN-0] Create admin account - POST /admin/
 [ADMIN-1] Admin view all classes - GET /classes 
 [ADMIN-2] Admin view individual class - GET /classes/:classId
 [ADMIN-3] Admin edit class - PUT /classes/:classId
