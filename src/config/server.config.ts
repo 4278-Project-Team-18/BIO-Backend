@@ -1,12 +1,12 @@
 import adminRouter from '../routes/admin.router';
 import studentRouter from '../routes/student.router';
 import classRouter from '../routes/class.router';
+import teacherRouter from '../routes/teacher.router';
+import volunteerRouter from '../routes/volunteer.router';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import http from 'http';
-import teacherRouter from '../routes/teacher.router';
-import volunteerRouter from '../routes/volunteer.router';
 
 const createServer = () => {
   const app = express();
