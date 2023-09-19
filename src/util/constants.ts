@@ -22,3 +22,12 @@ export const CLASS_ALL_KEYS = [
   'students',
   'estimatedDelivery',
 ];
+
+export const TEACHER_REQUIRED_KEYS = [
+  'firstName',
+  'lastName',
+  'email',
+  'password',
+];
+
+export const TEACHER_ALL_KEYS = ['firstName', 'lastName', 'email', 'password'];

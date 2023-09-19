@@ -5,6 +5,8 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import http from 'http';
+import teacherRouter from '../routes/teacher.router';
+import volunteerRouter from '../routes/volunteer.router';
 
 const createServer = () => {
   const app = express();
@@ -21,6 +23,8 @@ const createServer = () => {
   app.use('/admin', adminRouter);
   app.use('/student', studentRouter);
   app.use('/class', classRouter);
+  app.use('/teacher', teacherRouter);
+  app.use('/volunteer', volunteerRouter);
 
   // Create the server
   return http.createServer(app);
