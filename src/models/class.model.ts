@@ -1,6 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 
 const classSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   students: [
     {
       type: Schema.Types.ObjectId,
@@ -10,6 +14,7 @@ const classSchema = new mongoose.Schema({
   teacherId: {
     type: Schema.Types.ObjectId,
     ref: 'Teacher',
+    required: true,
   },
   estimatedDelivery: {
     type: String,

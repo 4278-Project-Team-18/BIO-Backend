@@ -3,6 +3,8 @@
 import {
   ADMIN_ALL_KEYS,
   ADMIN_REQUIRED_KEYS,
+  CLASS_ALL_KEYS,
+  CLASS_REQUIRED_KEYS,
   STUDENT_ALL_KEYS,
   STUDENT_REQUIRED_KEYS,
 } from './constants';
@@ -43,4 +45,5 @@ export const verifyKeys = (obj: any, keys: string[][]): string => {
 export const KeyValidationType: { [key: string]: string[][] } = {
   ADMIN: [ADMIN_REQUIRED_KEYS, ADMIN_ALL_KEYS],
   STUDENT: [STUDENT_REQUIRED_KEYS, STUDENT_ALL_KEYS],
+  CLASS: [CLASS_REQUIRED_KEYS, CLASS_ALL_KEYS],
 };

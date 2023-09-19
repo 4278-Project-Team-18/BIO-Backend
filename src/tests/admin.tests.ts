@@ -1,4 +1,4 @@
-import { TEST_ADMIN } from './testData/testData';
+import { createTestAdmin } from './testData/testData';
 import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
 import mongoose from 'mongoose';
@@ -35,6 +35,10 @@ after(async () => {
 
 describe('🧪 Test POST /admin/', () => {
   it('should successfully create admin', done => {
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+
+    // test request
     chai
       .request(server)
       .post('/admin/')
@@ -87,6 +91,10 @@ describe('🧪 Test POST /admin/', () => {
   });
 
   it('should return 400 if keys are missing', done => {
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+
+    // test request
     chai
       .request(server)
       .post('/admin/')
