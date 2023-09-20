@@ -7,6 +7,10 @@
 
 # testing
 /coverage
+/.nyc_output
+
+# utils
+/.husky
 
 # next.js
 /.next/
