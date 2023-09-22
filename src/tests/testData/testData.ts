@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
+import type { Volunteer } from '../../interfaces/volunteer.interface';
 import type { Teacher } from '../../interfaces/teacher.interface';
 import type { Class } from '../../interfaces/class.interface';
 import type { Student } from '../../interfaces/student.interface';
@@ -33,3 +34,11 @@ export const createTestTeacher = () =>
     email: faker.internet.email(),
     password: faker.internet.password(),
   }) as Teacher;
+
+export const createTestVolunteer = () =>
+  ({
+    firstName: faker.person.firstName(),
+    lastName: faker.person.lastName(),
+    email: faker.internet.email(),
+    password: faker.internet.password(),
+  }) as Volunteer;

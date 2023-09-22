@@ -1,7 +1,6 @@
 import { createTestTeacher } from './testData/testData';
 import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
-
 import mongoose from 'mongoose';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
