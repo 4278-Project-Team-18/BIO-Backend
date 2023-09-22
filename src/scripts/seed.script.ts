@@ -5,6 +5,7 @@ import {
   createTestClass,
   createTestStudent,
   createTestTeacher,
+  createTestVolunteer,
 } from '../tests/testData/testData';
 import Teacher from '../models/teacher.model';
 import Student from '../models/student.model';
@@ -32,7 +33,7 @@ dotenv.config();
 const NUM_TEST_TEACHERS = 5;
 const NUM_TEST_STUDENTS = 30;
 const NUM_TEST_CLASSES = 5;
-// const NUM_TEST_VOLUNTEERS = 10;
+const NUM_TEST_VOLUNTEERS = 10;
 const NUM_TEST_ADMINS = 2;
 
 // set up chai
@@ -120,18 +121,18 @@ describe('🌱 Seeding Database...', () => {
     });
   }
 
-  // for (let i = 0; i < NUM_TEST_VOLUNTEERS; i++) {
-  //   it(`should successfully seed volunteer ${i + 1} into database`, done => {
-  //     try {
-  //       const newVolunteer = new Volunteer(createTestVolunteer());
-  //       newVolunteer.save();
-  //       done();
-  //     } catch (error) {
-  //       console.error(error);
-  //       done(error);
-  //     }
-  //   });
-  // }
+  for (let i = 0; i < NUM_TEST_VOLUNTEERS; i++) {
+    it(`should successfully seed volunteer ${i + 1} into database`, done => {
+      try {
+        const newVolunteer = new Volunteer(createTestVolunteer());
+        newVolunteer.save();
+        done();
+      } catch (error) {
+        console.error(error);
+        done(error);
+      }
+    });
+  }
 
   for (let i = 0; i < NUM_TEST_ADMINS; i++) {
     it(`should successfully seed admin ${i + 1} into database`, done => {

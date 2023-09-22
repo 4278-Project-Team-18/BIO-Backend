@@ -105,4 +105,36 @@ describe('🧪 Test validation utils', () => {
       done(error);
     }
   });
+
+  // VOLUNTEER TESTS
+  it('should validate keys in volunteer object', done => {
+    try {
+      assert(verifyKeys(createTestStudent(), KeyValidationType.STUDENT) === '');
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
+
+  it('should return an error if keys are missing from volunteer object', done => {
+    try {
+      const badAdmin = createTestStudent() as Partial<Student>;
+      delete badAdmin.firstName;
+      assert(verifyKeys(badAdmin, KeyValidationType.ADMIN) !== '');
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
+
+  it('should return an error if keys are extraneous in volunteer object', done => {
+    try {
+      const badAdmin = createTestStudent() as any;
+      badAdmin.extraneous = 'extraneous';
+      assert(verifyKeys(badAdmin, KeyValidationType.ADMIN) !== '');
+      done();
+    } catch (error) {
+      done(error);
+    }
+  });
 });

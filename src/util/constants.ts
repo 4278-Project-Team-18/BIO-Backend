@@ -31,3 +31,18 @@ export const TEACHER_REQUIRED_KEYS = [
 ];
 
 export const TEACHER_ALL_KEYS = ['firstName', 'lastName', 'email', 'password'];
+
+export const VOLUNTEER_REQUIRED_KEYS = [
+  'firstName',
+  'lastName',
+  'email',
+  'password',
+];
+
+export const VOLUNTEER_ALL_KEYS = [
+  'firstName',
+  'lastName',
+  'email',
+  'password',
+  'matchedStudents',
+];
