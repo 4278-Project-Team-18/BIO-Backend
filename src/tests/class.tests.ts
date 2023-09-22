@@ -113,4 +113,22 @@ describe('🧪 Test POST /class/', () => {
         done(err);
       });
   });
+
+  it('should get all classes', done => {
+    // test request
+    chai
+      .request(server)
+      .get('/allClasses')
+      .send()
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(200);
+        expect(res.body).to.be.an('array');
+
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
 });

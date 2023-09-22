@@ -31,3 +31,20 @@ export const createStudent = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getStudents = async (req: Request, res: Response) => {
+  try {
+    const students = await Student.find({});
+
+    // if classes is null return 400
+    if (!students) {
+      return res.status(400).json({ error: 'Null students object returned.' });
+    }
+
+    // return new class
+    return res.status(200).json(students);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

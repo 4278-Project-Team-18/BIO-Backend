@@ -28,15 +28,23 @@ export const TEACHER_REQUIRED_KEYS = [
   'lastName',
   'email',
   'password',
+  'approvalStatus',
 ];
 
-export const TEACHER_ALL_KEYS = ['firstName', 'lastName', 'email', 'password'];
+export const TEACHER_ALL_KEYS = [
+  'firstName',
+  'lastName',
+  'email',
+  'password',
+  'approvalStatus',
+];
 
 export const VOLUNTEER_REQUIRED_KEYS = [
   'firstName',
   'lastName',
   'email',
   'password',
+  'approvalStatus',
 ];
 
 export const VOLUNTEER_ALL_KEYS = [
@@ -44,5 +52,6 @@ export const VOLUNTEER_ALL_KEYS = [
   'lastName',
   'email',
   'password',
+  'approvalStatus',
   'matchedStudents',
 ];

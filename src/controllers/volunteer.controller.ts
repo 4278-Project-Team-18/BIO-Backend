@@ -34,3 +34,16 @@ export const createVolunteer = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getVolunteers = async (req: Request, res: Response) => {
+  try {
+    const volunteers = await Volunteer.find({});
+    console.log(volunteers);
+
+    // return all volunteers
+    return res.status(200).json(volunteers);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

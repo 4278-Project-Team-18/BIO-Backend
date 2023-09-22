@@ -31,3 +31,20 @@ export const createClass = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getClasses = async (req: Request, res: Response) => {
+  try {
+    const classes = await Class.find({});
+
+    // if classes is null return 400
+    if (!classes) {
+      return res.status(400).json({ error: 'Null class object returned.' });
+    }
+
+    // return new class
+    return res.status(200).json(classes);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
