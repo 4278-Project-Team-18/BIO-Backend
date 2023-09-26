@@ -1,6 +1,7 @@
 import Class from '../models/class.model';
 import Student from '../models/student.model';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
 /**
@@ -61,7 +62,22 @@ export const getClasses = async (_: Request, res: Response) => {
  */
 export const addStudentToClass = async (req: Request, res: Response) => {
   // get class id and student id from request body
-  const { classId, firstName, LastInital, readingLevel } = req.body;
+  const { firstName, lastInitial, readingLevel } = req.body;
+
+  // get class id from request params
+  const { classId } = req.params;
+
+  if (!classId) {
+    return res.status(400).json({ error: 'No class id provided.' });
+  }
+
+  if (!req.body || (!firstName && !lastInitial && !readingLevel)) {
+    return res.status(400).json({ error: 'No student object provided.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId)) {
+    return res.status(400).json({ error: 'Invalid classId.' });
+  }
 
   // check if class id and student id are provided
   const keyValidationString = verifyKeys(req.body, KeyValidationType.STUDENT);
@@ -72,12 +88,12 @@ export const addStudentToClass = async (req: Request, res: Response) => {
   try {
     const newStudent = new Student({
       firstName,
-      LastInital,
+      lastInitial,
       readingLevel,
     });
 
     // find class by id
-    const classObj = await Class.findById(classId).populate('students');
+    const classObj = await Class.findById(classId);
 
     // if class is null return 400
     if (!classObj) {
@@ -91,8 +107,11 @@ export const addStudentToClass = async (req: Request, res: Response) => {
     await newStudent.save();
     await classObj.save();
 
+    // find the updated class
+    const updatedClass = await Class.findById(classId).populate('students');
+
     // return new class
-    return res.status(201).json(classObj);
+    return res.status(201).json(updatedClass);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
