@@ -31,3 +31,19 @@ export const createTeacher = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getTeachers = async (req: Request, res: Response) => {
+  try {
+    const teachers = await Teacher.find();
+
+    if (!Teacher) {
+      return res.status(400).json({ error: 'Null Teachers object returned.' });
+    }
+
+    // return teachers list
+    return res.status(200).json(teachers);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

@@ -1,3 +1,4 @@
+import { ApprovalStatus } from '../../interfaces/constants';
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
 import type { Volunteer } from '../../interfaces/volunteer.interface';
@@ -33,6 +34,7 @@ export const createTestTeacher = () =>
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
+    approvalStatus: randomApprovalStatus(),
   }) as Teacher;
 
 export const createTestVolunteer = () =>
@@ -41,4 +43,14 @@ export const createTestVolunteer = () =>
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
     password: faker.internet.password(),
+    approvalStatus: randomApprovalStatus(),
   }) as Volunteer;
+
+export const randomApprovalStatus = () => {
+  const approvalStatuses = [
+    ApprovalStatus.APPROVED,
+    ApprovalStatus.PENDING,
+    ApprovalStatus.REJECTED,
+  ];
+  return approvalStatuses[Math.floor(Math.random() * approvalStatuses.length)];
+};

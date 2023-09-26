@@ -17,6 +17,10 @@ const teacherSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  approvalStatus: {
+    type: String,
+    required: true,
+  },
   classes: [
     {
       type: Schema.Types.ObjectId,

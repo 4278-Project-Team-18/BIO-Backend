@@ -18,6 +18,10 @@ const volunteerSchema = new mongoose.Schema({
     required: true,
     default: '',
   },
+  approvalStatus: {
+    type: String,
+    required: true,
+  },
   matchedStudents: [
     {
       type: Schema.Types.ObjectId,

@@ -1,9 +1,15 @@
-import { createClass } from '../controllers/class.controller';
+import {
+  addStudentToClass,
+  createClass,
+  getClasses,
+} from '../controllers/class.controller';
 import express from 'express';
 
 const classRouter = express.Router();
 
-/* Admin Controller */
+/* Classes Controller */
 classRouter.post('/', createClass);
+classRouter.get('/allClasses', getClasses);
+classRouter.post('/:classId/addStudent', addStudentToClass);
 
 export = classRouter;
