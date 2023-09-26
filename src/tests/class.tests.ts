@@ -118,13 +118,11 @@ describe('🧪 Test POST /class/', () => {
     // test request
     chai
       .request(server)
-      .get('/allClasses')
-      .send()
+      .get('/class/allClasses/')
       .then(res => {
         // check for response
         expect(res.status).to.equal(200);
         expect(res.body).to.be.an('array');
-
         done();
       })
       .catch(err => {

@@ -1,5 +1,7 @@
-import { createVolunteer } from '../controllers/volunteer.controller';
-import { getVolunteers } from '../controllers/volunteer.controller';
+import {
+  getVolunteers,
+  createVolunteer,
+} from '../controllers/volunteer.controller';
 import express from 'express';
 
 const volunteerRouter = express.Router();

@@ -12,6 +12,7 @@ export const STUDENT_ALL_KEYS = [
   'studentLetterLink',
   'volunteerLetterLink',
   'matchedVolunteer',
+  'classId',
 ];
 
 export const CLASS_REQUIRED_KEYS = ['name', 'teacherId'];

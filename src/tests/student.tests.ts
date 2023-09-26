@@ -122,7 +122,7 @@ describe('🧪 Test POST /student/', () => {
     // test request
     chai
       .request(server)
-      .get('/allStudents')
+      .get('/student/allStudents/')
       .send()
       .then(res => {
         // check for response
