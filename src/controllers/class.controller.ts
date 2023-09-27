@@ -42,7 +42,7 @@ export const createClass = async (req: Request, res: Response) => {
  */
 export const getClasses = async (_: Request, res: Response) => {
   try {
-    const classes = await Class.find({});
+    const classes = await Class.find({}).populate('students');
 
     // if classes is null return 400
     if (!classes) {
@@ -107,11 +107,8 @@ export const addStudentToClass = async (req: Request, res: Response) => {
     await newStudent.save();
     await classObj.save();
 
-    // find the updated class
-    const updatedClass = await Class.findById(classId).populate('students');
-
     // return new class
-    return res.status(201).json(updatedClass);
+    return res.status(201).json(newStudent);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });

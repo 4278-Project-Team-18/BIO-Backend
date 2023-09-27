@@ -160,15 +160,14 @@ describe('🧪 Test POST /class/', () => {
 
             // check for keys
             expect(res.body).to.have.property('_id');
-            expect(res.body).to.have.property('name');
-            expect(res.body).to.have.property('teacherId');
-            expect(res.body).to.have.property('students');
+            expect(res.body).to.have.property('firstName');
+            expect(res.body).to.have.property('lastInitial');
+            expect(res.body).to.have.property('readingLevel');
 
             // check for values
-            expect(res.body.name).to.equal(TEST_CLASS.name);
-            expect(res.body.teacherId).to.equal(TEST_CLASS.teacherId);
-            expect(res.body.students).to.be.an('array');
-            expect(res.body.students.length).to.equal(1);
+            expect(res.body.firstName).to.equal(TEST_STUDENT.firstName);
+            expect(res.body.lastInitial).to.equal(TEST_STUDENT.lastInitial);
+            expect(res.body.readingLevel).to.equal(TEST_STUDENT.readingLevel);
 
             done();
           })
