@@ -209,7 +209,7 @@ describe('🧪 Test POST /volunteer/', () => {
             expect(res.body).to.have.property('approvalStatus');
 
             // check for values
-            expect(res.body.approvalStatus).to.equal('denied');
+            expect(res.body.approvalStatus).to.equal('rejected');
 
             done();
           })
