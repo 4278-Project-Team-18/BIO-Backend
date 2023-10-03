@@ -1,8 +1,7 @@
 import {
   getVolunteers,
   createVolunteer,
-  approveVolunteer,
-  denyVolunteer,
+  changeVolunteerApprovalStatus,
 } from '../controllers/volunteer.controller';
 import express from 'express';
 
@@ -11,7 +10,9 @@ const volunteerRouter = express.Router();
 /* Admin Controller */
 volunteerRouter.post('/', createVolunteer);
 volunteerRouter.get('/allVolunteers', getVolunteers);
-volunteerRouter.patch('/:volunteerId/approve', approveVolunteer);
-volunteerRouter.patch('/:volunteerId/deny', denyVolunteer);
+volunteerRouter.patch(
+  '/:volunteerId/changeVolunteerApprovalStatus',
+  changeVolunteerApprovalStatus
+);
 
 export = volunteerRouter;

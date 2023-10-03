@@ -159,7 +159,8 @@ describe('🧪 Test POST /volunteer/', () => {
         // approve volunteer
         chai
           .request(server)
-          .patch(`/volunteer/${res.body._id}/approve`)
+          .patch(`/volunteer/${res.body._id}/changeVolunteerApprovalStatus`)
+          .send({ newApprovalStatus: 'approved' })
           .then(res => {
             // check for response
             expect(res.status).to.equal(200);
@@ -182,7 +183,7 @@ describe('🧪 Test POST /volunteer/', () => {
       });
   });
 
-  it('should deny volunteer', done => {
+  it('should reject volunteer', done => {
     const TEST_VOLUNTEER = createTestVolunteer();
     // test request
     chai
@@ -197,7 +198,8 @@ describe('🧪 Test POST /volunteer/', () => {
         // deny volunteer
         chai
           .request(server)
-          .patch(`/volunteer/${res.body._id}/deny`)
+          .patch(`/volunteer/${res.body._id}/changeVolunteerApprovalStatus`)
+          .send({ newApprovalStatus: 'rejected' })
           .then(res => {
             // check for response
             expect(res.status).to.equal(200);
@@ -220,32 +222,12 @@ describe('🧪 Test POST /volunteer/', () => {
       });
   });
 
-  it('should fail to approve volunteer with invalid id', done => {
+  it('should fail to change volunteer status with invalid id', done => {
     // test request
     chai
       .request(server)
-      .patch(`/volunteer/12345678/approve`)
-      .then(res => {
-        // check for response
-        expect(res.status).to.equal(400);
-        expect(res.body).to.be.an('object');
-
-        // check for error
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Invalid volunteer ID.');
-
-        done();
-      })
-      .catch(err => {
-        done(err);
-      });
-  });
-
-  it('should fail to deny volunteer with invalid id', done => {
-    // test request
-    chai
-      .request(server)
-      .patch(`/volunteer/12345678/deny`)
+      .patch(`/volunteer/12345678/changeVolunteerApprovalStatus`)
+      .send({ newApprovalStatus: 'rejected' })
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
