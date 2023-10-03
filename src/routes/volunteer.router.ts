@@ -1,7 +1,7 @@
 import {
   getVolunteers,
   createVolunteer,
-  changeVolunteerApprovalStatus,
+  changeVolunteerApproval,
 } from '../controllers/volunteer.controller';
 import express from 'express';
 
@@ -12,7 +12,7 @@ volunteerRouter.post('/', createVolunteer);
 volunteerRouter.get('/allVolunteers', getVolunteers);
 volunteerRouter.patch(
   '/:volunteerId/changeVolunteerApprovalStatus',
-  changeVolunteerApprovalStatus
+  changeVolunteerApproval
 );
 
 export = volunteerRouter;

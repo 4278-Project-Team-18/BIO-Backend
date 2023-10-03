@@ -49,14 +49,11 @@ export const getVolunteers = async (req: Request, res: Response) => {
   }
 };
 
-export const changeVolunteerApprovalStatus = async (
-  req: Request,
-  res: Response
-) => {
+export const changeVolunteerApproval = async (req: Request, res: Response) => {
   const { volunteerId } = req.params;
 
   const { newApprovalStatus } = req.body;
-  console.log(req.body);
+
   if (!volunteerId) {
     return res.status(400).json({ error: 'No volunteer id provided.' });
   }
