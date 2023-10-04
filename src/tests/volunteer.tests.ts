@@ -143,4 +143,104 @@ describe('🧪 Test POST /volunteer/', () => {
         done(err);
       });
   });
+
+  it('should approve volunteer', done => {
+    const TEST_VOLUNTEER = createTestVolunteer();
+    // test request
+    chai
+      .request(server)
+      .post('/volunteer/')
+      .send(TEST_VOLUNTEER)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // approve volunteer
+        chai
+          .request(server)
+          .patch(`/volunteer/${res.body._id}/changeVolunteerApprovalStatus`)
+          .send({ newApprovalStatus: 'approved' })
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('object');
+
+            // check for keys
+            expect(res.body).to.have.property('approvalStatus');
+
+            // check for values
+            expect(res.body.approvalStatus).to.equal('approved');
+
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should reject volunteer', done => {
+    const TEST_VOLUNTEER = createTestVolunteer();
+    // test request
+    chai
+      .request(server)
+      .post('/volunteer/')
+      .send(TEST_VOLUNTEER)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // deny volunteer
+        chai
+          .request(server)
+          .patch(`/volunteer/${res.body._id}/changeVolunteerApprovalStatus`)
+          .send({ newApprovalStatus: 'rejected' })
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('object');
+
+            // check for keys
+            expect(res.body).to.have.property('approvalStatus');
+
+            // check for values
+            expect(res.body.approvalStatus).to.equal('rejected');
+
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to change volunteer status with invalid id', done => {
+    // test request
+    chai
+      .request(server)
+      .patch(`/volunteer/12345678/changeVolunteerApprovalStatus`)
+      .send({ newApprovalStatus: 'rejected' })
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body).to.have.property('error');
+        expect(res.body.error).to.equal('Invalid volunteer ID.');
+
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
 });
