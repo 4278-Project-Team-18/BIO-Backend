@@ -20,6 +20,7 @@ export const createTestStudent = () =>
     firstName: faker.person.firstName(),
     lastInitial: faker.person.lastName().charAt(0),
     readingLevel: faker.number.bigInt({ min: 100, max: 1500 }).toString(),
+    matchedVolunteer: null,
   }) as Student;
 
 export const createTestClass = () =>

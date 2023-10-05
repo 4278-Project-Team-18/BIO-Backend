@@ -2,6 +2,7 @@ import {
   getVolunteers,
   createVolunteer,
   changeVolunteerApproval,
+  matchVolunteerToStudent,
 } from '../controllers/volunteer.controller';
 import express from 'express';
 
@@ -14,5 +15,6 @@ volunteerRouter.patch(
   '/:volunteerId/changeVolunteerApprovalStatus',
   changeVolunteerApproval
 );
+volunteerRouter.patch('/matchVolunteerToStudent', matchVolunteerToStudent);
 
 export = volunteerRouter;
