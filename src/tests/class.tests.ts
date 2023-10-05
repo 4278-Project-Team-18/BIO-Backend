@@ -287,3 +287,85 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 });
+
+describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
+  it('should successfully remove student from class', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .then(res1 => {
+        // check for response
+        expect(res1.status).to.equal(201);
+        expect(res1.body).to.be.an('object');
+
+        // add student to class
+        chai
+          .request(server)
+          .post(`/class/${res1.body._id}/addStudent`)
+          .send(TEST_STUDENT)
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(201);
+            expect(res2.body).to.be.an('object');
+
+            // remove student from class
+            chai
+              .request(server)
+              .delete(`/class/${res1.body._id}/removeStudent/`)
+              .send({ studentId: res2.body._id })
+              .then(res3 => {
+                // check for response
+                expect(res3.status).to.equal(200);
+                expect(res3.body).to.be.an('object');
+
+                // check for keys
+                expect(res3.body).to.have.property('message');
+                expect(res3.body.message).to.equal(
+                  'Successfully removed student.'
+                );
+
+                done();
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to remove student from class when poorly formatted id provided', done => {
+    // remove student from class
+    chai
+      .request(server)
+      .delete(`/class/345678/removeStudent/`)
+      .send({ studentId: `${new mongoose.Types.ObjectId().toString()}` })
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body).to.have.property('error');
+        expect(res.body.error).to.equal('Invalid classId.');
+
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+});

@@ -114,3 +114,60 @@ export const addStudentToClass = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const removeStudentFromClass = async (req: Request, res: Response) => {
+  // get class id and student id from request body
+  const { studentId } = req.body;
+
+  // get class id from request params
+  const { classId } = req.params;
+
+  if (!classId) {
+    return res.status(400).json({ error: 'No class id provided.' });
+  }
+
+  if (!studentId) {
+    return res.status(400).json({ error: 'No student id provided.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId)) {
+    return res.status(400).json({ error: 'Invalid classId.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: 'Invalid studentId.' });
+  }
+
+  try {
+    // find class by id
+    const classObj = await Class.findById(classId);
+    const studentObj = await Student.findById(studentId);
+
+    // if class is null return 400
+    if (!classObj) {
+      return res.status(400).json({ error: 'Cannot find class object.' });
+    }
+
+    if (!studentObj) {
+      return res.status(400).json({ error: 'Cannot find student object.' });
+    }
+
+    // remove student id from class
+    classObj.students = classObj.students.filter(
+      (student: any) => student._id.toString() !== studentId
+    );
+
+    // save class to database
+    await classObj.save();
+    await studentObj.deleteOne();
+
+    // return new class
+    return res.status(200).json({
+      message: 'Successfully removed student.',
+      studentId: studentObj._id,
+    });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

@@ -136,3 +136,91 @@ describe('🧪 Test POST /student/', () => {
       });
   });
 });
+
+describe('🧪 Test PATCH /student/:studentId ', () => {
+  it('should successfully update student', done => {
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // test request
+    chai
+      .request(server)
+      .post('/student/')
+      .send(TEST_STUDENT)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // check for keys
+        expect(res.body).to.have.property('_id');
+        expect(res.body).to.have.property('firstName');
+        expect(res.body).to.have.property('lastInitial');
+        expect(res.body).to.have.property('readingLevel');
+
+        // check for values
+        expect(res.body.firstName).to.equal(TEST_STUDENT.firstName);
+        expect(res.body.lastInitial).to.equal(TEST_STUDENT.lastInitial);
+        expect(res.body.readingLevel).to.equal(TEST_STUDENT.readingLevel);
+
+        // update test student
+        TEST_STUDENT.firstName = 'UPDATED';
+
+        // test request
+        chai
+          .request(server)
+          .patch(`/student/${res.body._id}`)
+          .send(TEST_STUDENT)
+          .then(nextRes => {
+            // check for response
+            expect(nextRes.status).to.equal(200);
+            expect(nextRes.body).to.be.an('object');
+
+            // check for keys
+            expect(nextRes.body).to.have.property('_id');
+            expect(nextRes.body).to.have.property('firstName');
+            expect(nextRes.body).to.have.property('lastInitial');
+            expect(nextRes.body).to.have.property('readingLevel');
+
+            // check for values
+            expect(nextRes.body.firstName).to.equal(TEST_STUDENT.firstName);
+            expect(nextRes.body.lastInitial).to.equal(TEST_STUDENT.lastInitial);
+            expect(nextRes.body.readingLevel).to.equal(TEST_STUDENT.readingLevel);
+
+            // end test
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should return 400 if no student id provided', done => {
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    chai
+      .request(server)
+      .patch('/student/BAD')
+      .send(TEST_STUDENT)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body).to.have.property('error');
+        expect(res.body.error).to.equal('Invalid student ID.');
+
+        // end test
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+});
