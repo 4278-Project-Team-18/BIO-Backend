@@ -86,35 +86,57 @@ export const changeVolunteerApproval = async (req: Request, res: Response) => {
 };
 
 export const matchVolunteerToStudent = async (req: Request, res: Response) => {
-  const { volunteerId, studentId } = req.body;
+  const { volunteerId, studentIdArray } = req.body;
 
-  if (!volunteerId || !studentId) {
+  if (!volunteerId || !studentIdArray) {
     return res.status(400).json({ error: 'Missing volunteer or student ID.' });
   }
 
-  if (
-    !mongoose.Types.ObjectId.isValid(volunteerId) ||
-    !mongoose.Types.ObjectId.isValid(studentId)
-  ) {
-    return res.status(400).json({ error: 'Invalid student or volunteer ID.' });
+  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+    return res.status(400).json({ error: 'Invalid volunteer ID' });
   }
 
   try {
+    //get volunteer object
     const volunteerObj = await Volunteer.findById(volunteerId);
-    const studentObj = await Student.findById(studentId);
 
-    if (!volunteerObj || !studentObj) {
-      return res
-        .status(400)
-        .json({ error: 'cannot find volunteer or studentobject' });
+    //get all student objects
+    let studentPromises = [];
+    for (let i = 0; i < studentIdArray.length; ++i) {
+      const currentStudentId = studentIdArray[i];
+      if (!mongoose.Types.ObjectId.isValid(currentStudentId)) {
+        return res.status(400).json({ error: 'Invalid student ID.' });
+      }
+      studentPromises.push(Student.findById(currentStudentId));
     }
 
-    volunteerObj.matchedStudents.push(studentId);
-    studentObj.matchedVolunteer = volunteerId;
+    const studentObjArr = await Promise.all(studentPromises);
 
+    //add student IDs to volunteer
+    if (!volunteerObj) {
+      return res.status(400).json({ error: 'cannot find volunteer object' });
+    }
+    volunteerObj.matchedStudents.push(...studentIdArray);
+
+    //add volunteerID to students
+    studentPromises = [];
+    for (let i = 0; i < studentObjArr.length; ++i) {
+      const currentStudent = studentObjArr[i];
+      if (!currentStudent) {
+        return res.status(400).json({ error: 'cannot find student object' });
+      } else {
+        currentStudent.matchedVolunteer = volunteerId;
+        studentPromises.push(currentStudent.save());
+      }
+    }
+
+    //await all save operations
     await volunteerObj.save();
-    await studentObj.save();
-    return res.status(200).json({ volunteer: volunteerObj, student: studentObj });
+    await Promise.all(studentPromises);
+
+    return res
+      .status(200)
+      .json({ volunteer: volunteerObj, students: studentObjArr });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }

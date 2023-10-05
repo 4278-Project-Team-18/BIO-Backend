@@ -247,6 +247,7 @@ describe('🧪 Test POST /volunteer/', () => {
   it('should match student to volunteer', done => {
     const TEST_VOLUNTEER = createTestVolunteer();
     const TEST_STUDENT = createTestStudent();
+    const TEST_STUDENT2 = createTestStudent();
 
     // create volunteer
     chai
@@ -268,34 +269,49 @@ describe('🧪 Test POST /volunteer/', () => {
             expect(studentRes.status).to.equal(201);
             expect(studentRes.body).to.be.an('object');
 
-            //match student and volunteer
+            //create student 2
             chai
               .request(server)
-              .patch(`/volunteer/matchVolunteerToStudent`)
-              .send({
-                volunteerId: volunteerRes.body._id,
-                studentId: studentRes.body._id,
-              })
-              .then(res => {
+              .post('/student/')
+              .send(TEST_STUDENT2)
+              .then(studentRes2 => {
                 // check for response
-                expect(res.status).to.equal(200);
-                expect(res.body).to.be.an('object');
+                expect(studentRes2.status).to.equal(201);
+                expect(studentRes2.body).to.be.an('object');
 
-                // check for correct values
-                expect(
-                  res.body.volunteer.matchedStudents.include(studentRes.body._id)
-                );
-                expect(res.body.student.matchedVolunteer).to.equal(
-                  volunteerRes.body._id
-                );
-                done();
+                //match student and volunteer
+                chai
+                  .request(server)
+                  .patch(`/volunteer/matchVolunteerToStudent`)
+                  .send({
+                    volunteerId: volunteerRes.body._id,
+                    studentIdArray: [studentRes.body._id, studentRes2.body._id],
+                  })
+                  .then(res => {
+                    // check for response
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.be.an('object');
+
+                    // check for correct values
+                    expect(
+                      res.body.volunteer.matchedStudents.includes(
+                        studentRes.body._id
+                      )
+                    );
+                    for (let i = 0; i < res.body.students.length; ++i) {
+                      expect(res.body.students[i].matchedVolunteer).to.equal(
+                        volunteerRes.body._id
+                      );
+                    }
+                    done();
+                  })
+                  .catch(err => {
+                    done(err);
+                  });
               })
               .catch(err => {
                 done(err);
               });
-
-            // end test
-            done();
           })
           .catch(err => {
             done(err);
@@ -306,19 +322,19 @@ describe('🧪 Test POST /volunteer/', () => {
       });
   });
 
-  it('should fail to match with invalid volunteer and student IDs', done => {
+  it('should fail to match with invalid volunteer or student IDs', done => {
     //match student and volunteer
     chai
       .request(server)
       .patch(`/volunteer/matchVolunteerToStudent`)
-      .send({ volunteerId: '12345678', studentId: '12345678' })
+      .send({ volunteerId: '12345678', studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
         expect(res.body).to.be.an('object');
 
         // check for error
-        expect(res.body.error).to.equal('Invalid student or volunteer ID.');
+        expect(res.body.error).to.equal('Invalid volunteer ID');
         done();
       })
       .catch(err => {
@@ -331,7 +347,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .patch(`/volunteer/matchVolunteerToStudent`)
-      .send({ studentId: '12345678' })
+      .send({ studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
