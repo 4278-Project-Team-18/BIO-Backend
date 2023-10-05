@@ -1,4 +1,4 @@
-import { createTestVolunteer } from './testData/testData';
+import { createTestVolunteer, createTestStudent } from './testData/testData';
 import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
 import mongoose from 'mongoose';
@@ -237,6 +237,124 @@ describe('🧪 Test POST /volunteer/', () => {
         expect(res.body).to.have.property('error');
         expect(res.body.error).to.equal('Invalid volunteer ID.');
 
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should match student to volunteer', done => {
+    const TEST_VOLUNTEER = createTestVolunteer();
+    const TEST_STUDENT = createTestStudent();
+    const TEST_STUDENT2 = createTestStudent();
+
+    // create volunteer
+    chai
+      .request(server)
+      .post('/volunteer/')
+      .send(TEST_VOLUNTEER)
+      .then(volunteerRes => {
+        // check for response
+        expect(volunteerRes.status).to.equal(201);
+        expect(volunteerRes.body).to.be.an('object');
+
+        //create student
+        chai
+          .request(server)
+          .post('/student/')
+          .send(TEST_STUDENT)
+          .then(studentRes => {
+            // check for response
+            expect(studentRes.status).to.equal(201);
+            expect(studentRes.body).to.be.an('object');
+
+            //create student 2
+            chai
+              .request(server)
+              .post('/student/')
+              .send(TEST_STUDENT2)
+              .then(studentRes2 => {
+                // check for response
+                expect(studentRes2.status).to.equal(201);
+                expect(studentRes2.body).to.be.an('object');
+
+                //match student and volunteer
+                chai
+                  .request(server)
+                  .patch(`/volunteer/matchVolunteerToStudent`)
+                  .send({
+                    volunteerId: volunteerRes.body._id,
+                    studentIdArray: [studentRes.body._id, studentRes2.body._id],
+                  })
+                  .then(res => {
+                    // check for response
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.be.an('object');
+
+                    // check for correct values
+                    expect(
+                      res.body.volunteer.matchedStudents.includes(
+                        studentRes.body._id
+                      )
+                    );
+                    for (let i = 0; i < res.body.students.length; ++i) {
+                      expect(res.body.students[i].matchedVolunteer).to.equal(
+                        volunteerRes.body._id
+                      );
+                    }
+                    done();
+                  })
+                  .catch(err => {
+                    done(err);
+                  });
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to match with invalid volunteer or student IDs', done => {
+    //match student and volunteer
+    chai
+      .request(server)
+      .patch(`/volunteer/matchVolunteerToStudent`)
+      .send({ volunteerId: '12345678', studentIdArray: ['12345678'] })
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body.error).to.equal('Invalid volunteer ID');
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to match with missing volunteer or student id', done => {
+    //match student and volunteer
+    chai
+      .request(server)
+      .patch(`/volunteer/matchVolunteerToStudent`)
+      .send({ studentIdArray: ['12345678'] })
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body.error).to.equal('Missing volunteer or student ID.');
         done();
       })
       .catch(err => {
