@@ -293,14 +293,15 @@ describe('🧪 Test POST /volunteer/', () => {
                     expect(res.body).to.be.an('object');
 
                     // check for correct values
-                    expect(
-                      res.body.volunteer.matchedStudents.includes(
-                        studentRes.body._id
-                      )
-                    );
+
                     for (let i = 0; i < res.body.students.length; ++i) {
                       expect(res.body.students[i].matchedVolunteer).to.equal(
                         volunteerRes.body._id
+                      );
+                      expect(
+                        res.body.volunteer.matchedStudents.includes(
+                          res.body.students[i]._id
+                        )
                       );
                     }
                     done();
