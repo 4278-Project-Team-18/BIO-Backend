@@ -1,4 +1,5 @@
 import Invite from '../models/invite.model';
+import Admin from '../models/admin.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { SES } from 'aws-sdk';
@@ -65,8 +66,11 @@ export const sendInvite = async (req: Request, res: Response) => {
       'to accept the invitation, click the link below:\n{{link}}';
 
     const baseURL = 'https://book-i-own/invite/accept/';
+
+    const senderAdmin = await Admin.findById(senderId);
+
     const data = {
-      senderName: senderId.firstName,
+      senderName: senderAdmin?.firstName || 'John',
       newRole: role,
       link: baseURL + generateInviteCode(),
     };
