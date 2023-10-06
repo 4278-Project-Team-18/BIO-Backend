@@ -58,6 +58,8 @@ export const sendInvite = async (req: Request, res: Response) => {
     // save new invite to database
     await newInvite.save();
 
+    // TODO: @Matt send the email here...
+
     // return new invite
     return res.status(201).json(newInvite);
   } catch (error: any) {
