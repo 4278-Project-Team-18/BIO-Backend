@@ -95,3 +95,20 @@ export const removeInvite = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getAllInvites = async (_: Request, res: Response) => {
+  try {
+    const invites = await Invite.find({});
+
+    // Check if invites is null
+    if (!invites) {
+      return res.status(400).json({ error: 'No invites found.' });
+    }
+
+    // return invites
+    return res.status(200).json(invites);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
