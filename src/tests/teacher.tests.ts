@@ -138,4 +138,103 @@ describe('🧪 Test POST /teacher/', () => {
         done(err);
       });
   });
+
+  it('should approve teacher', done => {
+    const TEST_TEACHER = createTestTeacher();
+    // test request
+    chai
+      .request(server)
+      .post('/teacher/')
+      .send(TEST_TEACHER)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // approve volunteer
+        chai
+          .request(server)
+          .patch(`/teacher/${res.body._id}/changeTeacherApprovalStatus`)
+          .send({ newApprovalStatus: 'approved' })
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('object');
+
+            // check for keys
+            expect(res.body).to.have.property('approvalStatus');
+
+            // check for values
+            expect(res.body.approvalStatus).to.equal('approved');
+
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should reject teacher', done => {
+    const TEST_TEACHER = createTestTeacher();
+    // test request
+    chai
+      .request(server)
+      .post('/teacher/')
+      .send(TEST_TEACHER)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // approve volunteer
+        chai
+          .request(server)
+          .patch(`/teacher/${res.body._id}/changeTeacherApprovalStatus`)
+          .send({ newApprovalStatus: 'rejected' })
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(200);
+            expect(res.body).to.be.an('object');
+
+            // check for keys
+            expect(res.body).to.have.property('approvalStatus');
+
+            // check for values
+            expect(res.body.approvalStatus).to.equal('rejected');
+
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to change teacher status with invalid id', done => {
+    chai
+      .request(server)
+      .patch('/teacher/invalidId/changeTeacherApprovalStatus')
+      .send({ newApprovalStatus: 'approved' })
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body).to.have.property('error');
+        expect(res.body.error).to.equal('Invalid teacher ID.');
+
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
 });
