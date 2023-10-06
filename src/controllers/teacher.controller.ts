@@ -1,5 +1,7 @@
 import Teacher from '../models/teacher.model';
+import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
 export const createTeacher = async (req: Request, res: Response) => {
@@ -44,6 +46,41 @@ export const getTeachers = async (req: Request, res: Response) => {
     return res.status(200).json(teachers);
   } catch (error: any) {
     console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const changeTeacherApproval = async (req: Request, res: Response) => {
+  const { teacherId } = req.params;
+
+  const { newApprovalStatus } = req.body;
+
+  if (!teacherId) {
+    return res.status(400).json({ error: 'No teacher id provided.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+    return res.status(400).json({ error: 'Invalid teacher ID.' });
+  }
+
+  if (!Object.values(ApprovalStatus).includes(newApprovalStatus)) {
+    return res
+      .status(400)
+      .json({ error: 'Invalid new status string for teacher' });
+  }
+
+  try {
+    const teacherObj = await Teacher.findById(teacherId);
+
+    if (!teacherObj) {
+      return res.status(400).json({ error: 'cannot find teacher object' });
+    }
+
+    teacherObj.approvalStatus = newApprovalStatus;
+    await teacherObj.save();
+
+    return res.status(200).json(teacherObj);
+  } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
 };
