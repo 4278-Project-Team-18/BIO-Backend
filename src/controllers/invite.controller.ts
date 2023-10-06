@@ -1,6 +1,7 @@
 import Invite from '../models/invite.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import { SES } from 'aws-sdk';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
@@ -59,6 +60,40 @@ export const sendInvite = async (req: Request, res: Response) => {
     await newInvite.save();
 
     // TODO: @Matt send the email here...
+    const template =
+      'Hello!\n{{senderName}} has invited you to join the Book I Own club as a {{newRole}}.' +
+      'to accept the invitation, click the link below:\n{{link}}';
+
+    const baseURL = 'https://book-i-own/invite/accept/';
+    const data = {
+      senderName: senderId.firstName,
+      newRole: role,
+      link: baseURL + generateInviteCode(),
+    };
+
+    const ses = new SES({ region: 'us-east-1' });
+    const params = {
+      Source: 'noreply-cwrubio@gmail.com',
+      Template: template,
+      TemplateData: JSON.stringify(data),
+      Destination: {
+        ToAddresses: [email],
+      },
+      Message: {
+        Subject: {
+          Charset: 'UTF-8',
+          Data: 'Book I Own Invitation',
+        },
+      },
+    };
+
+    ses.sendTemplatedEmail(params, (err, data) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(data);
+      }
+    });
 
     // return new invite
     return res.status(201).json(newInvite);
@@ -95,3 +130,10 @@ export const removeInvite = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+function generateInviteCode(): string {
+  return (
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15)
+  );
+}
