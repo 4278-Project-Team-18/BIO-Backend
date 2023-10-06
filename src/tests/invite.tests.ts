@@ -162,19 +162,6 @@ describe('🧪 Test GET /invite/:inviteId', () => {
         done(error);
       });
   });
-
-  it('should fail to get invite with no inviteId', done => {
-    chai
-      .request(server)
-      .get('/invite/')
-      .then(res => {
-        expect(res.status).to.equal(404);
-        done();
-      })
-      .catch(error => {
-        done(error);
-      });
-  });
 });
 
 describe('🧪 Test DELETE /invite/:inviteId', () => {
@@ -227,6 +214,40 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
       .then(res => {
         expect(res.status).to.equal(404);
         done();
+      })
+      .catch(error => {
+        done(error);
+      });
+  });
+});
+
+describe('🧪 Test GET /invite/allInvites', () => {
+  it('should successfully get all invites', done => {
+    const TEST_INVITE = createTestInvite();
+
+    chai
+      .request(server)
+      .post('/invite/')
+      .send(TEST_INVITE)
+      .then(res => {
+        expect(res.status).to.equal(201);
+
+        chai
+          .request(server)
+          .get(`/invite/`)
+          .then(res1 => {
+            expect(res1.status).to.equal(200);
+            expect(res1.body).to.be.an('array');
+            expect(res1.body[0]).to.have.property('_id');
+            expect(res1.body[0]).to.have.property('email');
+            expect(res1.body[0]).to.have.property('senderId');
+            expect(res1.body[0]).to.have.property('role');
+            expect(res1.body[0]).to.have.property('status');
+            done();
+          })
+          .catch(error => {
+            done(error);
+          });
       })
       .catch(error => {
         done(error);
