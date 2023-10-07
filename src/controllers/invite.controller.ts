@@ -34,7 +34,7 @@ export const getInvite = async (req: Request, res: Response) => {
 
 export const sendInvite = async (req: Request, res: Response) => {
   // get email, role, and status from request body
-  const { email, role } = req.body;
+  const { email, role, senderId } = req.body;
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: 'No invite object provided.' });
@@ -61,7 +61,7 @@ export const sendInvite = async (req: Request, res: Response) => {
     // create new invite mongo object
     const newInvite = new Invite({
       email,
-      senderId: new mongoose.Types.ObjectId().toString(),
+      senderId: senderId || new mongoose.Types.ObjectId().toString(),
       role,
       status: Status.SENT,
     });
