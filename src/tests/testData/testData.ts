@@ -64,6 +64,6 @@ export const randomApprovalStatus = () => {
 };
 
 export const randomRole = () => {
-  const roles = ['teacher', 'volunteer'];
+  const roles = ['teacher', 'volunteer', 'admin'];
   return roles[Math.floor(Math.random() * roles.length)];
 };

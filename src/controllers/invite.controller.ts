@@ -1,7 +1,6 @@
 import Invite from '../models/invite.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
-import Admin from '../models/admin.model';
 import { sendInviteEmail } from '../util/email';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
@@ -35,7 +34,7 @@ export const getInvite = async (req: Request, res: Response) => {
 
 export const sendInvite = async (req: Request, res: Response) => {
   // get email, role, and status from request body
-  const { email, role, senderId } = req.body;
+  const { email, role } = req.body;
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: 'No invite object provided.' });
@@ -46,24 +45,32 @@ export const sendInvite = async (req: Request, res: Response) => {
     return res.status(400).json({ error: keyValidationString });
   }
 
-  if (!mongoose.Types.ObjectId.isValid(senderId)) {
-    return res.status(400).json({ error: 'Invalid senderId.' });
+  // uncomment when we do auth
+  // if (!mongoose.Types.ObjectId.isValid(senderId)) {
+  //   return res.status(400).json({ error: 'Invalid senderId.' });
+  // }
+
+  // check if invite already exists
+  const existingInvite = await Invite.findOne({ email });
+
+  if (existingInvite) {
+    return res.status(400).json({ error: 'Invite already exists.' });
   }
 
   try {
     // create new invite mongo object
     const newInvite = new Invite({
       email,
-      senderId,
+      senderId: new mongoose.Types.ObjectId().toString(),
       role,
       status: Status.SENT,
     });
 
-    // get sender
-    const sender = await Admin.findById(senderId);
+    // get sender, uncomment when we do auth
+    // const sender = await Admin.findById(senderId);
 
     if (process.env.ENVIRONMENT === 'production') {
-      sendInviteEmail(role, email, sender);
+      sendInviteEmail(role, email, null);
     }
 
     // save new invite to database
