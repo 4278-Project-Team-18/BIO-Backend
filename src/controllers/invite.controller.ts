@@ -1,9 +1,12 @@
 import Invite from '../models/invite.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
-import { SES } from 'aws-sdk';
+import Admin from '../models/admin.model';
+import { sendInviteEmail } from '../util/email';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
+dotenv.config();
 
 export const getInvite = async (req: Request, res: Response) => {
   // get invite id from request params
@@ -56,44 +59,15 @@ export const sendInvite = async (req: Request, res: Response) => {
       status: Status.SENT,
     });
 
+    // get sender
+    const sender = await Admin.findById(senderId);
+
+    if (process.env.ENVIRONMENT === 'production') {
+      sendInviteEmail(role, email, sender);
+    }
+
     // save new invite to database
     await newInvite.save();
-
-    // TODO: @Matt send the email here...
-    const template =
-      'Hello!\n{{senderName}} has invited you to join the Book I Own club as a {{newRole}}.' +
-      'to accept the invitation, click the link below:\n{{link}}';
-
-    const baseURL = 'https://book-i-own/invite/accept/';
-    const data = {
-      senderName: senderId.firstName,
-      newRole: role,
-      link: baseURL + generateInviteCode(),
-    };
-
-    const ses = new SES({ region: 'us-east-1' });
-    const params = {
-      Source: 'noreply-cwrubio@gmail.com',
-      Template: template,
-      TemplateData: JSON.stringify(data),
-      Destination: {
-        ToAddresses: [email],
-      },
-      Message: {
-        Subject: {
-          Charset: 'UTF-8',
-          Data: 'Book I Own Invitation',
-        },
-      },
-    };
-
-    ses.sendTemplatedEmail(params, (err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(data);
-      }
-    });
 
     // return new invite
     return res.status(201).json(newInvite);
@@ -147,10 +121,3 @@ export const getAllInvites = async (_: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
-function generateInviteCode(): string {
-  return (
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-  );
-}
