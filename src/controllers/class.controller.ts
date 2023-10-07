@@ -28,11 +28,15 @@ export const createClass = async (req: Request, res: Response) => {
     // create new class mongo object
     const newClass = new Class(classObj);
 
-    // get the teacher associated with the new class
-    const teacher = await Teacher.findById(classObj.teacherId);
-
     // if the teacher exists add the class id to the teacher
-    if (teacher) {
+    if (classObj.teacherId) {
+      // get the teacher associated with the new class
+      const teacher = await Teacher.findById(classObj.teacherId);
+
+      if (!teacher) {
+        return res.status(400).json({ error: 'Teacher does not exist.' });
+      }
+
       // add class id to teacher
       teacher.classes.push(newClass._id);
 

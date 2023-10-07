@@ -16,7 +16,7 @@ export const STUDENT_ALL_KEYS = [
   'classId',
 ];
 
-export const CLASS_REQUIRED_KEYS = ['name', 'teacherId'];
+export const CLASS_REQUIRED_KEYS = ['name'];
 
 export const CLASS_ALL_KEYS = [
   'name',
