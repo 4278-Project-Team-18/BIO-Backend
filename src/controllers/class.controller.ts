@@ -31,16 +31,15 @@ export const createClass = async (req: Request, res: Response) => {
     // get the teacher associated with the new class
     const teacher = await Teacher.findById(classObj.teacherId);
 
-    // if teacher is null return 400
-    if (!teacher) {
-      return res.status(400).json({ error: 'Cannot find teacher object.' });
+    // if the teacher exists add the class id to the teacher
+    if (teacher) {
+      // add class id to teacher
+      teacher.classes.push(newClass._id);
+
+      // save new class to database
+      await teacher.save();
     }
 
-    // add class id to teacher
-    teacher.classes.push(newClass._id);
-
-    // save new class to database
-    await teacher.save();
     await newClass.save();
 
     // return new class
