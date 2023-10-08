@@ -54,11 +54,9 @@ describe('🧪 Test POST /class/', () => {
         // check for keys
         expect(res.body).to.have.property('_id');
         expect(res.body).to.have.property('name');
-        expect(res.body).to.have.property('teacherId');
 
         // check for values
         expect(res.body.name).to.equal(TEST_CLASS.name);
-        expect(res.body.teacherId).to.equal(TEST_CLASS.teacherId);
 
         done();
       })
@@ -84,7 +82,7 @@ describe('🧪 Test POST /class/', () => {
 
         // check for error
         expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Missing keys: name. ');
+        expect(res.body.error).to.equal('No class object provided.');
 
         done();
       })

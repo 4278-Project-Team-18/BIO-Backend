@@ -14,7 +14,6 @@ const classSchema = new mongoose.Schema({
   teacherId: {
     type: Schema.Types.ObjectId,
     ref: 'Teacher',
-    required: true,
   },
   estimatedDelivery: {
     type: String,

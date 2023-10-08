@@ -27,7 +27,6 @@ export const createTestStudent = () =>
 export const createTestClass = () =>
   ({
     name: faker.word.adjective() + ' ' + faker.word.noun() + ' Class',
-    teacherId: new mongoose.Types.ObjectId().toString(),
   }) as Class;
 
 export const createTestTeacher = () =>
@@ -65,6 +64,6 @@ export const randomApprovalStatus = () => {
 };
 
 export const randomRole = () => {
-  const roles = ['teacher', 'volunteer'];
+  const roles = ['teacher', 'volunteer', 'admin'];
   return roles[Math.floor(Math.random() * roles.length)];
 };

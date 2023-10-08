@@ -240,7 +240,6 @@ describe('🧪 Test GET /invite/allInvites', () => {
             expect(res1.body).to.be.an('array');
             expect(res1.body[0]).to.have.property('_id');
             expect(res1.body[0]).to.have.property('email');
-            expect(res1.body[0]).to.have.property('senderId');
             expect(res1.body[0]).to.have.property('role');
             expect(res1.body[0]).to.have.property('status');
             done();

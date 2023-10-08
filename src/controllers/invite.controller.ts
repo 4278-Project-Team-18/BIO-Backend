@@ -2,9 +2,12 @@ import Invite from '../models/invite.model';
 import Admin from '../models/admin.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import { sendInviteEmail } from '../util/email';
 import { SES } from 'aws-sdk';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
+dotenv.config();
 
 export const getInvite = async (req: Request, res: Response) => {
   // get invite id from request params
@@ -44,23 +47,38 @@ export const sendInvite = async (req: Request, res: Response) => {
     return res.status(400).json({ error: keyValidationString });
   }
 
-  if (!mongoose.Types.ObjectId.isValid(senderId)) {
-    return res.status(400).json({ error: 'Invalid senderId.' });
+  // uncomment when we do auth
+  // if (!mongoose.Types.ObjectId.isValid(senderId)) {
+  //   return res.status(400).json({ error: 'Invalid senderId.' });
+  // }
+
+  // check if invite already exists
+  const existingInvite = await Invite.findOne({ email });
+
+  if (existingInvite) {
+    return res.status(400).json({ error: 'Invite already exists.' });
   }
 
   try {
     // create new invite mongo object
     const newInvite = new Invite({
       email,
-      senderId,
+      senderId: senderId || new mongoose.Types.ObjectId().toString(),
       role,
       status: Status.SENT,
     });
 
+    // get sender, uncomment when we do auth
+    // const sender = await Admin.findById(senderId);
+
+    if (process.env.ENVIRONMENT === 'production') {
+      sendInviteEmail(role, email, null);
+    }
+
     // save new invite to database
     await newInvite.save();
 
-    // TODO: @Matt send the email here...
+    // Email Template
     const template =
       'Hello!\n{{senderName}} has invited you to join the Book I Own club as a {{newRole}}.' +
       'to accept the invitation, click the link below:\n{{link}}';
@@ -69,15 +87,17 @@ export const sendInvite = async (req: Request, res: Response) => {
 
     const senderAdmin = await Admin.findById(senderId);
 
+    // Template data from request body
     const data = {
-      senderName: senderAdmin?.firstName || 'John',
+      senderName: senderAdmin?.firstName || 'Albert',
       newRole: role,
-      link: baseURL + generateInviteCode(),
+      link: baseURL,
     };
 
+    // SES config
     const ses = new SES({ region: 'us-east-1' });
     const params = {
-      Source: 'noreply-cwrubio@gmail.com',
+      Source: 'cwruBookIOwn@gmail.com',
       Template: template,
       TemplateData: JSON.stringify(data),
       Destination: {
@@ -91,6 +111,7 @@ export const sendInvite = async (req: Request, res: Response) => {
       },
     };
 
+    // Send email
     ses.sendTemplatedEmail(params, (err, data) => {
       if (err) {
         console.log(err);
@@ -151,10 +172,3 @@ export const getAllInvites = async (_: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
-function generateInviteCode(): string {
-  return (
-    Math.random().toString(36).substring(2, 15) +
-    Math.random().toString(36).substring(2, 15)
-  );
-}
