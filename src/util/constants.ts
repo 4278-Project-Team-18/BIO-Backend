@@ -62,6 +62,10 @@ export const INVITE_REQUIRED_KEYS = ['email', 'role'];
 
 export const INVITE_ALL_KEYS = ['email', 'senderId', 'role', 'status'];
 
+export const MATCH_REQUIRED_KEYS = ['volunteerId', 'studentIdArray'];
+
+export const UNMATCH_REQUIRED_KEYS = ['volunteerId', 'studentId'];
+
 export enum ApprovalStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
