@@ -9,7 +9,7 @@ import express from 'express';
 const inviteRouter = express.Router();
 
 /* Classes Controller */
-inviteRouter.post('/', sendInvite);
+inviteRouter.post('/sendInvite', sendInvite);
 inviteRouter.get('/', getAllInvites);
 inviteRouter.get('/:inviteId', getInvite);
 inviteRouter.delete('/:inviteId', removeInvite);

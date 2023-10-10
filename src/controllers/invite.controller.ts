@@ -3,7 +3,6 @@ import Admin from '../models/admin.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { sendInviteEmail } from '../util/email';
-import { SES } from 'aws-sdk';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
@@ -37,6 +36,7 @@ export const getInvite = async (req: Request, res: Response) => {
 export const sendInvite = async (req: Request, res: Response) => {
   // get email, role, and status from request body
   const { email, role, senderId } = req.body;
+  console.log('reached');
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: 'No invite object provided.' });
@@ -55,6 +55,7 @@ export const sendInvite = async (req: Request, res: Response) => {
   // check if invite already exists
   const existingInvite = await Invite.findOne({ email });
 
+  console.log(existingInvite);
   if (existingInvite) {
     return res.status(400).json({ error: 'Invite already exists.' });
   }
@@ -69,58 +70,17 @@ export const sendInvite = async (req: Request, res: Response) => {
     });
 
     // get sender, uncomment when we do auth
-    // const sender = await Admin.findById(senderId);
+    const sender = await Admin.findById(senderId);
 
-    if (process.env.ENVIRONMENT === 'production') {
-      sendInviteEmail(role, email, null);
-    }
+    // if (process.env.ENVIRONMENT === 'production') {
+    sendInviteEmail(role, email, sender);
+    // }
 
     // save new invite to database
     await newInvite.save();
 
-    // Email Template
-    const template =
-      'Hello!\n{{senderName}} has invited you to join the Book I Own club as a {{newRole}}.' +
-      'to accept the invitation, click the link below:\n{{link}}';
-
-    const baseURL = 'https://book-i-own/invite/accept/';
-
-    const senderAdmin = await Admin.findById(senderId);
-
-    // Template data from request body
-    const data = {
-      senderName: senderAdmin?.firstName || 'Albert',
-      newRole: role,
-      link: baseURL,
-    };
-
-    // SES config
-    const ses = new SES({ region: 'us-east-1' });
-    const params = {
-      Source: 'cwruBookIOwn@gmail.com',
-      Template: template,
-      TemplateData: JSON.stringify(data),
-      Destination: {
-        ToAddresses: [email],
-      },
-      Message: {
-        Subject: {
-          Charset: 'UTF-8',
-          Data: 'Book I Own Invitation',
-        },
-      },
-    };
-
-    // Send email
-    ses.sendTemplatedEmail(params, (err, data) => {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(data);
-      }
-    });
-
     // return new invite
+
     return res.status(201).json(newInvite);
   } catch (error: any) {
     console.log(error);
