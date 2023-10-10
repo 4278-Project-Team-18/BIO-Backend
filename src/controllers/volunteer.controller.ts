@@ -85,7 +85,8 @@ export const changeVolunteerApproval = async (req: Request, res: Response) => {
   }
 };
 
-export const matchVolunteerToStudent = async (req: Request, res: Response) => {
+//match volunteer and student
+export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
   const { volunteerId, studentIdArray } = req.body;
 
   if (!volunteerId || !studentIdArray) {
@@ -137,6 +138,70 @@ export const matchVolunteerToStudent = async (req: Request, res: Response) => {
     return res
       .status(200)
       .json({ volunteer: volunteerObj, students: studentObjArr });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+//unmatch volunteer and student
+export const unmatchVolunteerAndStudent = async (req: Request, res: Response) => {
+  const { volunteerId, studentId } = req.body;
+
+  //input validation
+  if (!volunteerId || !studentId) {
+    return res.status(400).json({ error: 'Missing volunteer or student ID.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+    return res.status(400).json({ error: 'Invalid volunteer ID' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: 'Invalid student ID' });
+  }
+
+  try {
+    //get volunteer object
+    const volunteerObj = await Volunteer.findById(volunteerId);
+    const studentObj = await Student.findById(studentId);
+
+    if (!volunteerObj) {
+      return res.status(400).json({ error: 'failed to find volunteer object' });
+    }
+
+    if (!studentObj) {
+      return res.status(400).json({ error: 'failed to find student object' });
+    }
+
+    //return error if the two Ids submitted are not currently matched
+    if (
+      !volunteerObj.matchedStudents.includes(studentId) &&
+      studentObj.matchedVolunteer != volunteerId
+    ) {
+      return res
+        .status(400)
+        .json({ error: 'volunteer not currently matched to student' });
+    }
+
+    //create a new array for the volunteer's students
+    const newStudentsArr = [];
+
+    //add all students to the volunteer's new list except the student to unmatch
+    for (let i = 0; i < volunteerObj.matchedStudents.length; ++i) {
+      if (volunteerObj.matchedStudents[i] != studentId) {
+        newStudentsArr.push(volunteerObj.matchedStudents[i]);
+      }
+    }
+
+    //update match fields to ummatch the two objects
+    volunteerObj.matchedStudents = newStudentsArr;
+    studentObj.matchedVolunteer = undefined;
+
+    //save
+    await volunteerObj.save();
+    await studentObj.save();
+
+    return res.status(200).json({ volunteer: volunteerObj, student: studentObj });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
