@@ -36,7 +36,6 @@ export const getInvite = async (req: Request, res: Response) => {
 export const sendInvite = async (req: Request, res: Response) => {
   // get email, role, and status from request body
   const { email, role, senderId } = req.body;
-  console.log('reached');
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: 'No invite object provided.' });
@@ -55,7 +54,6 @@ export const sendInvite = async (req: Request, res: Response) => {
   // check if invite already exists
   const existingInvite = await Invite.findOne({ email });
 
-  console.log(existingInvite);
   if (existingInvite) {
     return res.status(400).json({ error: 'Invite already exists.' });
   }
@@ -72,9 +70,9 @@ export const sendInvite = async (req: Request, res: Response) => {
     // get sender, uncomment when we do auth
     const sender = await Admin.findById(senderId);
 
-    // if (process.env.ENVIRONMENT === 'production') {
-    sendInviteEmail(role, email, sender);
-    // }
+    if (process.env.ENVIRONMENT === 'production') {
+      sendInviteEmail(role, email, sender);
+    }
 
     // save new invite to database
     await newInvite.save();

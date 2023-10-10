@@ -44,7 +44,7 @@ describe('🧪 Test POST /invite/', () => {
     // test request
     chai
       .request(server)
-      .post('/invite/')
+      .post('/invite/sendInvite')
       .send(TEST_INVITE)
       .then(res => {
         // check for response
@@ -79,7 +79,7 @@ describe('🧪 Test POST /invite/', () => {
     // test request
     chai
       .request(server)
-      .post('/invite/')
+      .post('/invite/sendInvite')
       .send(TEST_INVITE)
       .then(res => {
         // check for response
@@ -101,7 +101,7 @@ describe('🧪 Test POST /invite/', () => {
     // test request
     chai
       .request(server)
-      .post('/invite/')
+      .post('/invite/sendInvite')
       .send()
       .then(res => {
         // check for response
@@ -124,7 +124,7 @@ describe('🧪 Test GET /invite/:inviteId', () => {
   it('should successfully get invite', done => {
     chai
       .request(server)
-      .post('/invite/')
+      .post('/invite/sendInvite')
       .send(createTestInvite())
       .then(res => {
         const inviteId = res.body._id;
@@ -168,7 +168,7 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
   it('should successfully delete invite', done => {
     chai
       .request(server)
-      .post('/invite/')
+      .post('/invite/sendInvite')
       .send(createTestInvite())
       .then(res => {
         const inviteId = res.body._id;
@@ -227,7 +227,7 @@ describe('🧪 Test GET /invite/allInvites', () => {
 
     chai
       .request(server)
-      .post('/invite/')
+      .post('/invite/sendInvite')
       .send(TEST_INVITE)
       .then(res => {
         expect(res.status).to.equal(201);
