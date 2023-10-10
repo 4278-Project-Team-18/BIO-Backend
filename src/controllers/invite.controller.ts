@@ -2,6 +2,7 @@ import Invite from '../models/invite.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { sendInviteEmail } from '../util/email';
+import Admin from '../models/admin.model';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
