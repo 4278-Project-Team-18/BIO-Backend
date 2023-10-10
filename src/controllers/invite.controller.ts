@@ -1,5 +1,4 @@
 import Invite from '../models/invite.model';
-import Admin from '../models/admin.model';
 import { Status } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { sendInviteEmail } from '../util/email';
@@ -64,7 +63,7 @@ export const sendInvite = async (req: Request, res: Response) => {
     // create new invite mongo object
     const newInvite = new Invite({
       email,
-      senderId: senderId || new mongoose.Types.ObjectId().toString(),
+      senderId: senderId || new mongoose.Types.ObjectId(),
       role,
       status: Status.SENT,
     });

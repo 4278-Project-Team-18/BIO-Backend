@@ -40,7 +40,7 @@ export const createVolunteer = async (req: Request, res: Response) => {
 
 export const getVolunteers = async (req: Request, res: Response) => {
   try {
-    const volunteers = await Volunteer.find({});
+    const volunteers = await Volunteer.find({}).populate('matchedStudents');
 
     // return all volunteers
     return res.status(200).json(volunteers);
