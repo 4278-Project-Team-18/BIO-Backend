@@ -282,7 +282,7 @@ describe('🧪 Test POST /volunteer/', () => {
                 //match student and volunteer
                 chai
                   .request(server)
-                  .patch(`/volunteer/matchVolunteerAndStudent`)
+                  .patch(`/volunteer/match`)
                   .send({
                     volunteerId: volunteerRes.body._id,
                     studentIdArray: [studentRes.body._id, studentRes2.body._id],
@@ -327,7 +327,7 @@ describe('🧪 Test POST /volunteer/', () => {
     //match student and volunteer
     chai
       .request(server)
-      .patch(`/volunteer/matchVolunteerAndStudent`)
+      .patch(`/volunteer/match`)
       .send({ volunteerId: '12345678', studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
@@ -347,7 +347,7 @@ describe('🧪 Test POST /volunteer/', () => {
     //match student and volunteer
     chai
       .request(server)
-      .patch(`/volunteer/matchVolunteerAndStudent`)
+      .patch(`/volunteer/match`)
       .send({ studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
@@ -355,7 +355,7 @@ describe('🧪 Test POST /volunteer/', () => {
         expect(res.body).to.be.an('object');
 
         // check for error
-        expect(res.body.error).to.equal('Missing volunteer or student ID.');
+        expect(res.body.error).to.equal('Missing keys: volunteerId. ');
         done();
       })
       .catch(err => {
@@ -390,7 +390,7 @@ describe('🧪 Test POST /volunteer/', () => {
             //match student and volunteer
             chai
               .request(server)
-              .patch('/volunteer/matchVolunteerAndStudent')
+              .patch('/volunteer/match')
               .send({
                 volunteerId: volunteerRes.body._id,
                 studentIdArray: [studentRes.body._id],
@@ -416,7 +416,7 @@ describe('🧪 Test POST /volunteer/', () => {
                 //match student and volunteer
                 chai
                   .request(server)
-                  .patch(`/volunteer/unmatchVolunteerAndStudent`)
+                  .patch(`/volunteer/unmatch`)
                   .send({
                     volunteerId: volunteerRes.body._id,
                     studentId: studentRes.body._id,
@@ -480,7 +480,7 @@ describe('🧪 Test POST /volunteer/', () => {
             //match student and volunteer
             chai
               .request(server)
-              .patch('/volunteer/unmatchVolunteerAndStudent')
+              .patch('/volunteer/unmatch')
               .send({
                 volunteerId: volunteerRes.body._id,
                 studentId: studentRes.body._id,
@@ -513,7 +513,7 @@ describe('🧪 Test POST /volunteer/', () => {
     //match student and volunteer
     chai
       .request(server)
-      .patch(`/volunteer/unmatchVolunteerAndStudent`)
+      .patch(`/volunteer/unmatch`)
       .send({ studentId: '12345678' })
       .then(res => {
         // check for response
@@ -521,7 +521,7 @@ describe('🧪 Test POST /volunteer/', () => {
         expect(res.body).to.be.an('object');
 
         // check for error
-        expect(res.body.error).to.equal('Missing volunteer or student ID.');
+        expect(res.body.error).to.equal('Missing keys: volunteerId. ');
         done();
       })
       .catch(err => {

@@ -16,7 +16,7 @@ volunteerRouter.patch(
   '/:volunteerId/changeVolunteerApprovalStatus',
   changeVolunteerApproval
 );
-volunteerRouter.patch('/matchVolunteerAndStudent', matchVolunteerAndStudent);
-volunteerRouter.patch('/unmatchVolunteerAndStudent', unmatchVolunteerAndStudent);
+volunteerRouter.patch('/match', matchVolunteerAndStudent);
+volunteerRouter.patch('/unmatch', unmatchVolunteerAndStudent);
 
 export = volunteerRouter;

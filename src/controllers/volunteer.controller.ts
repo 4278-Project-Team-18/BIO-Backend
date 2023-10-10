@@ -89,8 +89,10 @@ export const changeVolunteerApproval = async (req: Request, res: Response) => {
 export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
   const { volunteerId, studentIdArray } = req.body;
 
-  if (!volunteerId || !studentIdArray) {
-    return res.status(400).json({ error: 'Missing volunteer or student ID.' });
+  const keyValidationString = verifyKeys(req.body, KeyValidationType.MATCH);
+  //input validation
+  if (keyValidationString) {
+    return res.status(400).json({ error: keyValidationString });
   }
 
   if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
@@ -147,9 +149,10 @@ export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
 export const unmatchVolunteerAndStudent = async (req: Request, res: Response) => {
   const { volunteerId, studentId } = req.body;
 
+  const keyValidationString = verifyKeys(req.body, KeyValidationType.UNMATCH);
   //input validation
-  if (!volunteerId || !studentId) {
-    return res.status(400).json({ error: 'Missing volunteer or student ID.' });
+  if (keyValidationString) {
+    return res.status(400).json({ error: keyValidationString });
   }
 
   if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
@@ -183,18 +186,10 @@ export const unmatchVolunteerAndStudent = async (req: Request, res: Response) =>
         .json({ error: 'volunteer not currently matched to student' });
     }
 
-    //create a new array for the volunteer's students
-    const newStudentsArr = [];
-
-    //add all students to the volunteer's new list except the student to unmatch
-    for (let i = 0; i < volunteerObj.matchedStudents.length; ++i) {
-      if (volunteerObj.matchedStudents[i] != studentId) {
-        newStudentsArr.push(volunteerObj.matchedStudents[i]);
-      }
-    }
-
     //update match fields to ummatch the two objects
-    volunteerObj.matchedStudents = newStudentsArr;
+    volunteerObj.matchedStudents = volunteerObj.matchedStudents.filter(
+      id => id != studentId
+    );
     studentObj.matchedVolunteer = undefined;
 
     //save

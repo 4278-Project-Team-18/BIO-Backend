@@ -58,6 +58,10 @@ export const VOLUNTEER_ALL_KEYS = [
   'matchedStudents',
 ];
 
+export const MATCH_REQUIRED_KEYS = ['volunteerId', 'studentIdArray'];
+
+export const UNMATCH_REQUIRED_KEYS = ['volunteerId', 'studentId'];
+
 export enum ApprovalStatus {
   PENDING = 'pending',
   APPROVED = 'approved',
