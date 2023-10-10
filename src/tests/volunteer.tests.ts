@@ -282,7 +282,7 @@ describe('🧪 Test POST /volunteer/', () => {
                 //match student and volunteer
                 chai
                   .request(server)
-                  .patch(`/volunteer/matchVolunteerToStudent`)
+                  .patch(`/volunteer/match`)
                   .send({
                     volunteerId: volunteerRes.body._id,
                     studentIdArray: [studentRes.body._id, studentRes2.body._id],
@@ -327,7 +327,7 @@ describe('🧪 Test POST /volunteer/', () => {
     //match student and volunteer
     chai
       .request(server)
-      .patch(`/volunteer/matchVolunteerToStudent`)
+      .patch(`/volunteer/match`)
       .send({ volunteerId: '12345678', studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
@@ -347,7 +347,7 @@ describe('🧪 Test POST /volunteer/', () => {
     //match student and volunteer
     chai
       .request(server)
-      .patch(`/volunteer/matchVolunteerToStudent`)
+      .patch(`/volunteer/match`)
       .send({ studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
@@ -355,7 +355,173 @@ describe('🧪 Test POST /volunteer/', () => {
         expect(res.body).to.be.an('object');
 
         // check for error
-        expect(res.body.error).to.equal('Missing volunteer or student ID.');
+        expect(res.body.error).to.equal('Missing keys: volunteerId. ');
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should match then ummatch student and volunteer', done => {
+    const TEST_VOLUNTEER = createTestVolunteer();
+    const TEST_STUDENT = createTestStudent();
+
+    // create volunteer
+    chai
+      .request(server)
+      .post('/volunteer/')
+      .send(TEST_VOLUNTEER)
+      .then(volunteerRes => {
+        // check for response
+        expect(volunteerRes.status).to.equal(201);
+        expect(volunteerRes.body).to.be.an('object');
+
+        //create student
+        chai
+          .request(server)
+          .post('/student/')
+          .send(TEST_STUDENT)
+          .then(studentRes => {
+            // check for response
+            expect(studentRes.status).to.equal(201);
+            expect(studentRes.body).to.be.an('object');
+
+            //match student and volunteer
+            chai
+              .request(server)
+              .patch('/volunteer/match')
+              .send({
+                volunteerId: volunteerRes.body._id,
+                studentIdArray: [studentRes.body._id],
+              })
+              .then(matchRes => {
+                // check for response
+                expect(matchRes.status).to.equal(200);
+                expect(matchRes.body).to.be.an('object');
+
+                // check for correct values
+
+                for (let i = 0; i < matchRes.body.students.length; ++i) {
+                  expect(matchRes.body.students[i].matchedVolunteer).to.equal(
+                    volunteerRes.body._id
+                  );
+                  expect(
+                    matchRes.body.volunteer.matchedStudents.includes(
+                      matchRes.body.students[i]._id
+                    )
+                  );
+                }
+
+                //match student and volunteer
+                chai
+                  .request(server)
+                  .patch(`/volunteer/unmatch`)
+                  .send({
+                    volunteerId: volunteerRes.body._id,
+                    studentId: studentRes.body._id,
+                  })
+                  .then(res => {
+                    // check for response
+                    expect(res.status).to.equal(200);
+                    expect(res.body).to.be.an('object');
+
+                    // check for correct values
+
+                    expect(
+                      !res.body.volunteer.matchedStudents.includes(
+                        studentRes.body._id
+                      )
+                    );
+                    expect(res.body.student.matchedVolunteer).to.equal(undefined);
+                    done();
+                  })
+                  .catch(err => {
+                    done(err);
+                  });
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to ummatch student and volunteer who are not currently matched', done => {
+    const TEST_VOLUNTEER = createTestVolunteer();
+    const TEST_STUDENT = createTestStudent();
+
+    // create volunteer
+    chai
+      .request(server)
+      .post('/volunteer/')
+      .send(TEST_VOLUNTEER)
+      .then(volunteerRes => {
+        // check for response
+        expect(volunteerRes.status).to.equal(201);
+        expect(volunteerRes.body).to.be.an('object');
+
+        //create student
+        chai
+          .request(server)
+          .post('/student/')
+          .send(TEST_STUDENT)
+          .then(studentRes => {
+            // check for response
+            expect(studentRes.status).to.equal(201);
+            expect(studentRes.body).to.be.an('object');
+
+            //match student and volunteer
+            chai
+              .request(server)
+              .patch('/volunteer/unmatch')
+              .send({
+                volunteerId: volunteerRes.body._id,
+                studentId: studentRes.body._id,
+              })
+              .then(matchRes => {
+                // check for response
+                expect(matchRes.status).to.equal(400);
+                expect(matchRes.body).to.be.an('object');
+                expect(matchRes.body.error).to.equal(
+                  'volunteer not currently matched to student'
+                );
+
+                // check for correct values
+                done();
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to unmatch with missing volunteer or student id', done => {
+    //match student and volunteer
+    chai
+      .request(server)
+      .patch(`/volunteer/unmatch`)
+      .send({ studentId: '12345678' })
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(400);
+        expect(res.body).to.be.an('object');
+
+        // check for error
+        expect(res.body.error).to.equal('Missing keys: volunteerId. ');
         done();
       })
       .catch(err => {
