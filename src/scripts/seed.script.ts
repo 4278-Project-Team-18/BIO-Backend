@@ -74,6 +74,8 @@ before(async () => {
 // after tests: close mongodb connection and close mock server
 after(async () => {
   try {
+    // wait 2 seconds
+    await new Promise(resolve => setTimeout(resolve, 2000));
     await mongoose.connection.close();
   } catch (error) {
     console.error(error);
@@ -131,10 +133,12 @@ describe('🌱 Seeding Database...', () => {
                     try {
                       res.should.have.status(201);
                     } catch (error) {
+                      done(error);
                       console.error(error);
                     }
                   });
               } catch (error) {
+                done(error);
                 console.error(error);
               }
             }
@@ -150,9 +154,19 @@ describe('🌱 Seeding Database...', () => {
   for (let i = 0; i < NUM_TEST_VOLUNTEERS; i++) {
     it(`should successfully seed volunteer ${i + 1} into database`, done => {
       try {
-        const newVolunteer = new Volunteer(createTestVolunteer());
-        newVolunteer.save();
-        done();
+        chai
+          .request(server)
+          .post('/volunteer/')
+          .send(createTestVolunteer())
+          .then(res => {
+            try {
+              res.should.have.status(201);
+              done();
+            } catch (error) {
+              console.error(error);
+              done(error);
+            }
+          });
       } catch (error) {
         console.error(error);
         done(error);
@@ -178,7 +192,7 @@ describe('🌱 Seeding Database...', () => {
               try {
                 chai
                   .request(server)
-                  .post('/invite/')
+                  .post('/invite/sendInvite')
                   .send(newInvite)
                   .then(res => {
                     try {
