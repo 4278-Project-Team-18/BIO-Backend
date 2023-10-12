@@ -16,7 +16,7 @@ export const STUDENT_ALL_KEYS = [
   'classId',
 ];
 
-export const CLASS_REQUIRED_KEYS = ['name', 'teacherId'];
+export const CLASS_REQUIRED_KEYS = ['name'];
 
 export const CLASS_ALL_KEYS = [
   'name',
@@ -57,6 +57,10 @@ export const VOLUNTEER_ALL_KEYS = [
   'approvalStatus',
   'matchedStudents',
 ];
+
+export const INVITE_REQUIRED_KEYS = ['email', 'role'];
+
+export const INVITE_ALL_KEYS = ['email', 'senderId', 'role', 'status'];
 
 export const MATCH_REQUIRED_KEYS = ['volunteerId', 'studentIdArray'];
 

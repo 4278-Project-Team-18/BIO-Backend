@@ -31,3 +31,16 @@ export const createAdmin = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getAdmins = async (req: Request, res: Response) => {
+  try {
+    // find all admins in database
+    const admins = await Admin.find({});
+
+    // return admins
+    return res.status(200).json(admins);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

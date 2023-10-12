@@ -3,6 +3,7 @@ import { connectTestsToMongo } from '../util/tests.util';
 import {
   createTestAdmin,
   createTestClass,
+  createTestInvite,
   createTestStudent,
   createTestTeacher,
   createTestVolunteer,
@@ -12,12 +13,12 @@ import Student from '../models/student.model';
 import Class from '../models/class.model';
 import Volunteer from '../models/volunteer.model';
 import Admin from '../models/admin.model';
+import Invite from '../models/invite.model';
 import mongoose from 'mongoose';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import chai from 'chai';
 import type { Server } from 'http';
-
 dotenv.config();
 
 /**
@@ -30,11 +31,25 @@ dotenv.config();
  * We can collect all the promises in an array and then resolve them all at once with Promise.all().
  */
 
+// number of test teachers
 const NUM_TEST_TEACHERS = 5;
-const NUM_TEST_STUDENTS = 30;
-const NUM_TEST_CLASSES = 5;
+
+// number of test students per class
+const NUM_TEST_STUDENTS_PER_CLASS = 12;
+
+// number of test classes
+const NUM_CLASSES_PER_TEACHER = 1;
+const NUM_TEST_CLASSES = NUM_TEST_TEACHERS * NUM_CLASSES_PER_TEACHER;
+
+// number of test volunteers
 const NUM_TEST_VOLUNTEERS = 10;
+
+// number of test admins
 const NUM_TEST_ADMINS = 2;
+
+// number of test invites
+const NUM_TEST_INVITES_PER_ADMIN = 6;
+const NUM_TEST_INVITES = NUM_TEST_ADMINS * NUM_TEST_INVITES_PER_ADMIN;
 
 // set up chai
 chai.use(chaiHttp);
@@ -52,12 +67,15 @@ before(async () => {
   await Class.deleteMany({});
   await Volunteer.deleteMany({});
   await Admin.deleteMany({});
-  server = app.listen(6003);
+  await Invite.deleteMany({});
+  server = app.listen(6006);
 });
 
 // after tests: close mongodb connection and close mock server
 after(async () => {
   try {
+    // wait 2 seconds
+    await new Promise(resolve => setTimeout(resolve, 2000));
     await mongoose.connection.close();
   } catch (error) {
     console.error(error);
@@ -67,6 +85,8 @@ after(async () => {
 });
 
 describe('🌱 Seeding Database...', () => {
+  const teacherIds: string[] = [];
+
   for (let i = 0; i < NUM_TEST_TEACHERS; i++) {
     it(`should successfully seed teacher ${i + 1} into database`, done => {
       chai
@@ -76,24 +96,7 @@ describe('🌱 Seeding Database...', () => {
         .then(res => {
           try {
             res.should.have.status(201);
-            done();
-          } catch (error) {
-            console.error(error);
-            done(error);
-          }
-        });
-    });
-  }
-
-  for (let i = 0; i < NUM_TEST_STUDENTS; i++) {
-    it(`should successfully seed student ${i + 1} into database`, done => {
-      chai
-        .request(server)
-        .post('/student/')
-        .send(createTestStudent())
-        .then(res => {
-          try {
-            res.should.have.status(201);
+            teacherIds.push(res.body._id);
             done();
           } catch (error) {
             console.error(error);
@@ -104,14 +107,41 @@ describe('🌱 Seeding Database...', () => {
   }
 
   for (let i = 0; i < NUM_TEST_CLASSES; i++) {
-    it(`should successfully seed class ${i + 1} into database`, done => {
+    it(`should successfully seed class ${
+      i + 1
+    } into database and students for that class`, done => {
+      const newClass = createTestClass();
+      newClass.teacherId = teacherIds[i % NUM_TEST_TEACHERS];
+
       chai
         .request(server)
         .post('/class/')
-        .send(createTestClass())
+        .send(newClass)
         .then(res => {
           try {
             res.should.have.status(201);
+
+            for (let j = 0; j < NUM_TEST_STUDENTS_PER_CLASS; j++) {
+              try {
+                const newStudent = createTestStudent();
+
+                chai
+                  .request(server)
+                  .post(`/class/${res.body._id}/addStudent`)
+                  .send(newStudent)
+                  .then(res => {
+                    try {
+                      res.should.have.status(201);
+                    } catch (error) {
+                      done(error);
+                      console.error(error);
+                    }
+                  });
+              } catch (error) {
+                done(error);
+                console.error(error);
+              }
+            }
             done();
           } catch (error) {
             console.error(error);
@@ -124,9 +154,19 @@ describe('🌱 Seeding Database...', () => {
   for (let i = 0; i < NUM_TEST_VOLUNTEERS; i++) {
     it(`should successfully seed volunteer ${i + 1} into database`, done => {
       try {
-        const newVolunteer = new Volunteer(createTestVolunteer());
-        newVolunteer.save();
-        done();
+        chai
+          .request(server)
+          .post('/volunteer/')
+          .send(createTestVolunteer())
+          .then(res => {
+            try {
+              res.should.have.status(201);
+              done();
+            } catch (error) {
+              console.error(error);
+              done(error);
+            }
+          });
       } catch (error) {
         console.error(error);
         done(error);
@@ -135,7 +175,9 @@ describe('🌱 Seeding Database...', () => {
   }
 
   for (let i = 0; i < NUM_TEST_ADMINS; i++) {
-    it(`should successfully seed admin ${i + 1} into database`, done => {
+    it(`should successfully seed admin ${
+      i + 1
+    } into database and invites from that admin`, done => {
       chai
         .request(server)
         .post('/admin/')
@@ -143,6 +185,26 @@ describe('🌱 Seeding Database...', () => {
         .then(res => {
           try {
             res.should.have.status(201);
+
+            for (let i = 0; i < NUM_TEST_INVITES; i++) {
+              const newInvite = createTestInvite();
+              newInvite.senderId = res.body._id;
+              try {
+                chai
+                  .request(server)
+                  .post('/invite/sendInvite')
+                  .send(newInvite)
+                  .then(res => {
+                    try {
+                      res.should.have.status(201);
+                    } catch (error) {
+                      console.error(error);
+                    }
+                  });
+              } catch (error) {
+                console.error(error);
+              }
+            }
             done();
           } catch (error) {
             console.error(error);

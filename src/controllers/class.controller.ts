@@ -1,6 +1,8 @@
 import Class from '../models/class.model';
 import Student from '../models/student.model';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+
+import Teacher from '../models/teacher.model';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
@@ -26,7 +28,22 @@ export const createClass = async (req: Request, res: Response) => {
     // create new class mongo object
     const newClass = new Class(classObj);
 
-    // save new class to database
+    // if the teacher exists add the class id to the teacher
+    if (classObj.teacherId) {
+      // get the teacher associated with the new class
+      const teacher = await Teacher.findById(classObj.teacherId);
+
+      if (!teacher) {
+        return res.status(400).json({ error: 'Teacher does not exist.' });
+      }
+
+      // add class id to teacher
+      teacher.classes.push(newClass._id);
+
+      // save new class to database
+      await teacher.save();
+    }
+
     await newClass.save();
 
     // return new class

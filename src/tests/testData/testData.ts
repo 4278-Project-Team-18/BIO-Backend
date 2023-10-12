@@ -1,6 +1,7 @@
 import { ApprovalStatus } from '../../interfaces/constants';
 import { faker } from '@faker-js/faker';
 import mongoose from 'mongoose';
+import type { Invite } from '../../interfaces/invite.interface';
 import type { Volunteer } from '../../interfaces/volunteer.interface';
 import type { Teacher } from '../../interfaces/teacher.interface';
 import type { Class } from '../../interfaces/class.interface';
@@ -26,7 +27,6 @@ export const createTestStudent = () =>
 export const createTestClass = () =>
   ({
     name: faker.word.adjective() + ' ' + faker.word.noun() + ' Class',
-    teacherId: new mongoose.Types.ObjectId().toString(),
   }) as Class;
 
 export const createTestTeacher = () =>
@@ -47,6 +47,13 @@ export const createTestVolunteer = () =>
     approvalStatus: randomApprovalStatus(),
   }) as Volunteer;
 
+export const createTestInvite = () =>
+  ({
+    email: faker.internet.email(),
+    senderId: new mongoose.Types.ObjectId().toString(),
+    role: randomRole(),
+  }) as Invite;
+
 export const randomApprovalStatus = () => {
   const approvalStatuses = [
     ApprovalStatus.APPROVED,
@@ -54,4 +61,9 @@ export const randomApprovalStatus = () => {
     ApprovalStatus.REJECTED,
   ];
   return approvalStatuses[Math.floor(Math.random() * approvalStatuses.length)];
+};
+
+export const randomRole = () => {
+  const roles = ['teacher', 'volunteer', 'admin'];
+  return roles[Math.floor(Math.random() * roles.length)];
 };

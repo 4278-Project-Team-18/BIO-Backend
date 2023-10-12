@@ -3,6 +3,7 @@ import studentRouter from '../routes/student.router';
 import classRouter from '../routes/class.router';
 import teacherRouter from '../routes/teacher.router';
 import volunteerRouter from '../routes/volunteer.router';
+import inviteRouter from '../routes/invite.router';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -25,6 +26,7 @@ const createServer = () => {
   app.use('/class', classRouter);
   app.use('/teacher', teacherRouter);
   app.use('/volunteer', volunteerRouter);
+  app.use('/invite', inviteRouter);
 
   // Create the server
   return http.createServer(app);
