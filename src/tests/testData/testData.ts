@@ -13,7 +13,6 @@ export const createTestAdmin = () =>
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
-    password: faker.internet.password(),
   }) as Admin;
 
 export const createTestStudent = () =>

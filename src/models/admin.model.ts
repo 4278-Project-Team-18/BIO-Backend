@@ -13,11 +13,6 @@ const adminSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  password: {
-    type: String,
-    required: true,
-    default: '',
-  },
 });
 
 const Admin = mongoose.model('Admin', adminSchema);

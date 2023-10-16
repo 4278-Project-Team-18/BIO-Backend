@@ -53,13 +53,11 @@ describe('🧪 Test POST /admin/', () => {
         expect(res.body).to.have.property('email');
         expect(res.body).to.have.property('firstName');
         expect(res.body).to.have.property('lastName');
-        expect(res.body).to.have.property('password');
 
         // check for values
         expect(res.body.email).to.equal(TEST_ADMIN.email);
         expect(res.body.firstName).to.equal(TEST_ADMIN.firstName);
         expect(res.body.lastName).to.equal(TEST_ADMIN.lastName);
-        expect(res.body.password).to.equal(TEST_ADMIN.password);
 
         // end test
         done();
@@ -101,7 +99,6 @@ describe('🧪 Test POST /admin/', () => {
       .send({
         email: TEST_ADMIN.email,
         lastName: TEST_ADMIN.lastName,
-        password: TEST_ADMIN.password,
       })
       .then(res => {
         // check for response
