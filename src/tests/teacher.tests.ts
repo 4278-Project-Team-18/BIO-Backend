@@ -55,14 +55,12 @@ describe('🧪 Test POST /teacher/', () => {
         expect(res.body).to.have.property('email');
         expect(res.body).to.have.property('firstName');
         expect(res.body).to.have.property('lastName');
-        expect(res.body).to.have.property('password');
         expect(res.body).to.have.property('approvalStatus');
 
         // check for values
         expect(res.body.email).to.equal(TEST_TEACHER.email);
         expect(res.body.firstName).to.equal(TEST_TEACHER.firstName);
         expect(res.body.lastName).to.equal(TEST_TEACHER.lastName);
-        expect(res.body.password).to.equal(TEST_TEACHER.password);
         expect(res.body.approvalStatus).to.equal(TEST_TEACHER.approvalStatus);
 
         // end test
@@ -113,24 +111,6 @@ describe('🧪 Test POST /teacher/', () => {
         // check for error
         expect(res.body).to.have.property('error');
         expect(res.body.error).to.equal('Missing keys: email. ');
-
-        done();
-      })
-      .catch(err => {
-        done(err);
-      });
-  });
-
-  it('should get all teachers', done => {
-    // test request
-    chai
-      .request(server)
-      .get('/teacher/allTeachers/')
-      .send()
-      .then(res => {
-        // check for response
-        expect(res.status).to.equal(200);
-        expect(res.body).to.be.an('array');
 
         done();
       })

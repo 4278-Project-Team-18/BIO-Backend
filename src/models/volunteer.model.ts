@@ -13,11 +13,6 @@ const volunteerSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-  password: {
-    type: String,
-    required: true,
-    default: '',
-  },
   approvalStatus: {
     type: String,
     required: true,

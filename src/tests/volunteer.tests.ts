@@ -56,14 +56,12 @@ describe('🧪 Test POST /volunteer/', () => {
         expect(res.body).to.have.property('email');
         expect(res.body).to.have.property('firstName');
         expect(res.body).to.have.property('lastName');
-        expect(res.body).to.have.property('password');
         expect(res.body).to.have.property('approvalStatus');
 
         // check for values
         expect(res.body.email).to.equal(TEST_VOLUNTEER.email);
         expect(res.body.firstName).to.equal(TEST_VOLUNTEER.firstName);
         expect(res.body.lastName).to.equal(TEST_VOLUNTEER.lastName);
-        expect(res.body.password).to.equal(TEST_VOLUNTEER.password);
         expect(res.body.approvalStatus).to.equal(TEST_VOLUNTEER.approvalStatus);
 
         // end test
@@ -114,28 +112,6 @@ describe('🧪 Test POST /volunteer/', () => {
         // check for error
         expect(res.body).to.have.property('error');
         expect(res.body.error).to.equal('Missing keys: email. ');
-
-        done();
-      })
-      .catch(err => {
-        done(err);
-      });
-  });
-
-  it('should get all volunteers', done => {
-    // test request
-    chai
-      .request(server)
-      .get('/volunteer/allVolunteers')
-      .send()
-      .then(res => {
-        // check for response
-        expect(res.status).to.equal(200);
-        expect(res.body).to.be.an('array');
-        if (res.body.length > 0) {
-          expect(res.body[0]).to.be.an('object');
-          expect(res.body[0]).to.have.property('matchedStudents');
-        }
 
         done();
       })

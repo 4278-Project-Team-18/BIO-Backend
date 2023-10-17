@@ -1,7 +1,17 @@
 /* eslint-disable autofix/no-unused-vars */
-export const ADMIN_REQUIRED_KEYS = ['firstName', 'lastName', 'email'];
+export const ADMIN_REQUIRED_KEYS = [
+  'firstName',
+  'lastName',
+  'email',
+  'approvalStatus',
+];
 
-export const ADMIN_ALL_KEYS = ['firstName', 'lastName', 'email'];
+export const ADMIN_ALL_KEYS = [
+  'firstName',
+  'lastName',
+  'email',
+  'approvalStatus',
+];
 
 export const STUDENT_REQUIRED_KEYS = ['firstName', 'lastInitial', 'readingLevel'];
 
@@ -29,7 +39,6 @@ export const TEACHER_REQUIRED_KEYS = [
   'firstName',
   'lastName',
   'email',
-  'password',
   'approvalStatus',
 ];
 
@@ -37,7 +46,6 @@ export const TEACHER_ALL_KEYS = [
   'firstName',
   'lastName',
   'email',
-  'password',
   'approvalStatus',
 ];
 
@@ -45,7 +53,6 @@ export const VOLUNTEER_REQUIRED_KEYS = [
   'firstName',
   'lastName',
   'email',
-  'password',
   'approvalStatus',
 ];
 
@@ -53,14 +60,13 @@ export const VOLUNTEER_ALL_KEYS = [
   'firstName',
   'lastName',
   'email',
-  'password',
   'approvalStatus',
   'matchedStudents',
 ];
 
 export const INVITE_REQUIRED_KEYS = ['email', 'role'];
 
-export const INVITE_ALL_KEYS = ['email', 'senderId', 'role', 'status'];
+export const INVITE_ALL_KEYS = ['email', 'sender', 'role', 'status'];
 
 export const MATCH_REQUIRED_KEYS = ['volunteerId', 'studentIdArray'];
 

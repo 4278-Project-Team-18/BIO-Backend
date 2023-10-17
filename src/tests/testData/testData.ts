@@ -1,6 +1,5 @@
 import { ApprovalStatus } from '../../interfaces/constants';
 import { faker } from '@faker-js/faker';
-import mongoose from 'mongoose';
 import type { Invite } from '../../interfaces/invite.interface';
 import type { Volunteer } from '../../interfaces/volunteer.interface';
 import type { Teacher } from '../../interfaces/teacher.interface';
@@ -13,6 +12,7 @@ export const createTestAdmin = () =>
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
+    approvalStatus: randomApprovalStatus(),
   }) as Admin;
 
 export const createTestStudent = () =>
@@ -33,7 +33,6 @@ export const createTestTeacher = () =>
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
-    password: faker.internet.password(),
     approvalStatus: randomApprovalStatus(),
   }) as Teacher;
 
@@ -42,14 +41,12 @@ export const createTestVolunteer = () =>
     firstName: faker.person.firstName(),
     lastName: faker.person.lastName(),
     email: faker.internet.email(),
-    password: faker.internet.password(),
     approvalStatus: randomApprovalStatus(),
   }) as Volunteer;
 
 export const createTestInvite = () =>
   ({
     email: faker.internet.email(),
-    senderId: new mongoose.Types.ObjectId().toString(),
     role: randomRole(),
   }) as Invite;
 

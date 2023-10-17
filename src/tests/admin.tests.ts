@@ -53,11 +53,13 @@ describe('🧪 Test POST /admin/', () => {
         expect(res.body).to.have.property('email');
         expect(res.body).to.have.property('firstName');
         expect(res.body).to.have.property('lastName');
+        expect(res.body).to.have.property('approvalStatus');
 
         // check for values
         expect(res.body.email).to.equal(TEST_ADMIN.email);
         expect(res.body.firstName).to.equal(TEST_ADMIN.firstName);
         expect(res.body.lastName).to.equal(TEST_ADMIN.lastName);
+        expect(res.body.approvalStatus).to.equal(TEST_ADMIN.approvalStatus);
 
         // end test
         done();
@@ -107,7 +109,9 @@ describe('🧪 Test POST /admin/', () => {
 
         // check for message
         expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Missing keys: firstName. ');
+        expect(res.body.error).to.equal(
+          'Missing keys: firstName, approvalStatus. '
+        );
 
         // end test
         done();

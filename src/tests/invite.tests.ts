@@ -54,13 +54,11 @@ describe('🧪 Test POST /invite/', () => {
         // check for keys
         expect(res.body).to.have.property('_id');
         expect(res.body).to.have.property('email');
-        expect(res.body).to.have.property('senderId');
         expect(res.body).to.have.property('role');
         expect(res.body).to.have.property('status');
 
         // check for values
         expect(res.body.email).to.equal(TEST_INVITE.email);
-        expect(res.body.senderId).to.equal(TEST_INVITE.senderId);
         expect(res.body.role).to.equal(TEST_INVITE.role);
         expect(res.body.status).to.equal(Status.SENT);
 
@@ -136,7 +134,6 @@ describe('🧪 Test GET /invite/:inviteId', () => {
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('_id');
             expect(res.body).to.have.property('email');
-            expect(res.body).to.have.property('senderId');
             expect(res.body).to.have.property('role');
             expect(res.body).to.have.property('status');
             done();
@@ -180,7 +177,6 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('_id');
             expect(res.body).to.have.property('email');
-            expect(res.body).to.have.property('senderId');
             expect(res.body).to.have.property('role');
             expect(res.body).to.have.property('status');
             done();

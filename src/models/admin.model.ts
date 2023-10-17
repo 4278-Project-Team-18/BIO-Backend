@@ -13,6 +13,10 @@ const adminSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
+  approvalStatus: {
+    type: String,
+    required: true,
+  },
 });
 
 const Admin = mongoose.model('Admin', adminSchema);

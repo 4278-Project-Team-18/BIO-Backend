@@ -1,5 +1,5 @@
 import {
-  getVolunteers,
+  getVolunteer,
   createVolunteer,
   changeVolunteerApproval,
   matchVolunteerAndStudent,
@@ -11,7 +11,7 @@ const volunteerRouter = express.Router();
 
 /* Admin Controller */
 volunteerRouter.post('/', createVolunteer);
-volunteerRouter.get('/allVolunteers', getVolunteers);
+volunteerRouter.get('/:volunteerId', getVolunteer);
 volunteerRouter.patch(
   '/:volunteerId/changeVolunteerApprovalStatus',
   changeVolunteerApproval

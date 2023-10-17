@@ -6,6 +6,7 @@ import Admin from '../models/admin.model';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
+import type { Admin as AdminInterface } from '../interfaces/admin.interface';
 dotenv.config();
 
 export const getInvite = async (req: Request, res: Response) => {
@@ -18,7 +19,7 @@ export const getInvite = async (req: Request, res: Response) => {
 
   try {
     // find invite in database
-    const invite = await Invite.findById(inviteId);
+    const invite = await Invite.findById(inviteId).populate('sender');
 
     // if invite is null return 400
     if (!invite) {
@@ -35,7 +36,7 @@ export const getInvite = async (req: Request, res: Response) => {
 
 export const sendInvite = async (req: Request, res: Response) => {
   // get email, role, and status from request body
-  const { email, role, senderId } = req.body;
+  const { email, role, sender: senderId } = req.body;
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: 'No invite object provided.' });
@@ -62,13 +63,13 @@ export const sendInvite = async (req: Request, res: Response) => {
     // create new invite mongo object
     const newInvite = new Invite({
       email,
-      senderId: senderId || new mongoose.Types.ObjectId(),
+      sender: senderId,
       role,
       status: Status.SENT,
     });
 
     // get sender, uncomment when we do auth
-    const sender = await Admin.findById(senderId);
+    const sender = (await Admin.findById(senderId)) as AdminInterface;
 
     if (process.env.ENVIRONMENT === 'production') {
       sendInviteEmail(role, email, sender);

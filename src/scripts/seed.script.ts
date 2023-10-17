@@ -188,7 +188,7 @@ describe('🌱 Seeding Database...', () => {
 
             for (let i = 0; i < NUM_TEST_INVITES; i++) {
               const newInvite = createTestInvite();
-              newInvite.senderId = res.body._id;
+              newInvite.sender = res.body._id;
               try {
                 chai
                   .request(server)

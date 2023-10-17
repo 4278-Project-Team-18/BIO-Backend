@@ -38,12 +38,24 @@ export const createVolunteer = async (req: Request, res: Response) => {
   }
 };
 
-export const getVolunteers = async (req: Request, res: Response) => {
+export const getVolunteer = async (req: Request, res: Response) => {
+  const { volunteerId } = req.params;
+
+  // check if volunteer id is provided
+  if (!volunteerId) {
+    return res.status(400).json({ error: 'No volunteer id provided.' });
+  }
+
   try {
-    const volunteers = await Volunteer.find({}).populate('matchedStudents');
+    const volunteer =
+      await Volunteer.findById(volunteerId).populate('matchedStudents');
+
+    if (!volunteer) {
+      return res.status(400).json({ error: 'Volunteer not found!' });
+    }
 
     // return all volunteers
-    return res.status(200).json(volunteers);
+    return res.status(200).json(volunteer);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
