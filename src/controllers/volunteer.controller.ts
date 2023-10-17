@@ -62,6 +62,18 @@ export const getVolunteer = async (req: Request, res: Response) => {
   }
 };
 
+export const getVolunteers = async (req: Request, res: Response) => {
+  try {
+    const volunteer = await Volunteer.find({}).populate('matchedStudents');
+
+    // return all volunteers
+    return res.status(200).json(volunteer);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const changeVolunteerApproval = async (req: Request, res: Response) => {
   const { volunteerId } = req.params;
 

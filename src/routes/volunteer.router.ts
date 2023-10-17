@@ -12,6 +12,7 @@ const volunteerRouter = express.Router();
 /* Admin Controller */
 volunteerRouter.post('/', createVolunteer);
 volunteerRouter.get('/:volunteerId', getVolunteer);
+volunteerRouter.get('/allVolunteers', getVolunteer);
 volunteerRouter.patch(
   '/:volunteerId/changeVolunteerApprovalStatus',
   changeVolunteerApproval
