@@ -1,9 +1,9 @@
-import { createAdmin } from '../controllers/admin.controller';
+import { createAccount } from '../controllers/accounts.controller';
 import express from 'express';
 
 const accountsRouter = express.Router();
 
 /* Admin Controller */
-accountsRouter.post('/', createAdmin);
+accountsRouter.post('/', createAccount);
 
 export = accountsRouter;

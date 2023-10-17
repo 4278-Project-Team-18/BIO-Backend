@@ -2,27 +2,38 @@ import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Volunteer from '../models/volunteer.model';
 import Teacher from '../models/teacher.model';
 import Admin from '../models/admin.model';
+import { ApprovalStatus } from '../util/constants';
 import type { Request, Response } from 'express';
 
 export const createAccount = async (req: Request, res: Response) => {
   // get student object from request body
-  const user = req.body;
-  const { role } = req.query;
+  const { firstName, lastName, email, role, inviteId } = req.body;
 
-  // the body should contain a user object
-  // the query should contain a user type (student, volunteer, admin)
+  // check if invite id is provided
+  if (!inviteId) {
+    return res.status(400).json({ error: 'No invite id provided.' });
+  }
 
+  // check if user role is provided
   if (!role) {
     return res.status(400).json({ error: 'No user role provided.' });
   }
 
+  // check if user role is provided
+  const user = {
+    firstName,
+    lastName,
+    email,
+    approvalStatus: ApprovalStatus.PENDING,
+  };
+
   // check if user object is provided
-  if (!user || Object.keys(user).length === 0) {
+  if (!user || Object.keys(user).length === 1) {
     return res.status(400).json({ error: 'No user object provided.' });
   }
 
   // check if user object has all required keys and no extraneous keys
-  const keyValidationString = verifyKeys(user, KeyValidationType.ADMIN);
+  const keyValidationString = verifyKeys(user, KeyValidationType.ACCOUNT);
   if (keyValidationString) {
     return res.status(400).json({ error: keyValidationString });
   }
