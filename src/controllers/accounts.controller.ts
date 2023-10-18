@@ -83,3 +83,61 @@ export const createAccount = async (req: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const getAccount = async (req: Request, res: Response) => {
+  const { accountEmail, role } = req.query;
+
+  // check if account id is provided
+  if (!accountEmail) {
+    return res.status(400).json({ error: 'No account email provided.' });
+  }
+
+  // check if user role is provided
+  if (!role) {
+    return res.status(400).json({ error: 'No user role provided.' });
+  }
+
+  try {
+    // if the role is admin get admin
+    if (role === 'admin') {
+      const admin = await Admin.find({ email: accountEmail });
+
+      if (!admin) {
+        return res.status(400).json({ error: 'Admin not found!' });
+      }
+
+      // return all admins
+      return res.status(200).json(admin);
+    }
+
+    // if the role is volunteer get volunteer
+    if (role === 'volunteer') {
+      const volunteer = await Volunteer.find({ email: accountEmail });
+
+      if (!volunteer) {
+        return res.status(400).json({ error: 'Volunteer not found!' });
+      }
+
+      // return all volunteers
+      return res.status(200).json(volunteer);
+    }
+
+    // if the role is teacher get teacher
+    if (role === 'teacher') {
+      const teacher = await Teacher.find({ email: accountEmail });
+
+      if (!teacher) {
+        return res.status(400).json({ error: 'Teacher not found!' });
+      }
+
+      // return all teachers
+      return res.status(200).json(teacher);
+    }
+
+    // return error if user type is not valid
+    return res.status(400).json({ error: 'Invalid user type.' });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

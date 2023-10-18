@@ -10,7 +10,7 @@ const classRouter = express.Router();
 
 /* Classes Controller */
 classRouter.post('/', createClass);
-classRouter.get('/allClasses', getClasses);
+classRouter.get('/', getClasses);
 classRouter.post('/:classId/addStudent', addStudentToClass);
 classRouter.delete('/:classId/removeStudent', removeStudentFromClass);
 

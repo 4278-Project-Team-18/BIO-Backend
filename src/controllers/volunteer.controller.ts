@@ -64,10 +64,15 @@ export const getVolunteer = async (req: Request, res: Response) => {
 
 export const getVolunteers = async (req: Request, res: Response) => {
   try {
-    const volunteer = await Volunteer.find({}).populate('matchedStudents');
+    const volunteers = await Volunteer.find({}).populate('matchedStudents');
+
+    // check if volunteers exist
+    if (!volunteers) {
+      return res.status(400).json({ error: 'Volunteers not found!' });
+    }
 
     // return all volunteers
-    return res.status(200).json(volunteer);
+    return res.status(200).json(volunteers);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });

@@ -57,6 +57,22 @@ export const getTeacher = async (req: Request, res: Response) => {
   }
 };
 
+export const getTeachers = async (req: Request, res: Response) => {
+  try {
+    const teachers = await Teacher.find({});
+
+    if (!teachers) {
+      return res.status(400).json({ error: 'Teachers not found!' });
+    }
+
+    // return teachers list
+    return res.status(200).json(teachers);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const changeTeacherApproval = async (req: Request, res: Response) => {
   const { teacherId } = req.params;
 

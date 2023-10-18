@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^4.12.14",
     "aws-sdk": "^2.1472.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
