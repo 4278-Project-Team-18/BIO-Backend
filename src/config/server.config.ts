@@ -23,13 +23,48 @@ const createServer = () => {
   app.disable('x-powered-by');
 
   // Routers
-  app.use('/admin', ClerkExpressRequireAuth({}), adminRouter);
-  app.use('/student', ClerkExpressRequireAuth({}), studentRouter);
-  app.use('/class', ClerkExpressRequireAuth({}), classRouter);
-  app.use('/teacher', ClerkExpressRequireAuth({}), teacherRouter);
-  app.use('/volunteer', ClerkExpressRequireAuth({}), volunteerRouter);
-  app.use('/invite', ClerkExpressRequireAuth({}), inviteRouter);
-  app.use('/accounts', ClerkExpressRequireAuth({}), accountsRouter);
+  app.use(
+    '/admin',
+    process.env.environment === 'test'
+      ? adminRouter
+      : (ClerkExpressRequireAuth({}), adminRouter)
+  );
+  app.use(
+    '/student',
+    process.env.environment === 'test'
+      ? studentRouter
+      : (ClerkExpressRequireAuth({}), studentRouter)
+  );
+  app.use(
+    '/class',
+    process.env.environment === 'test'
+      ? classRouter
+      : (ClerkExpressRequireAuth({}), classRouter)
+  );
+  app.use(
+    '/teacher',
+    process.env.environment === 'test'
+      ? teacherRouter
+      : (ClerkExpressRequireAuth({}), teacherRouter)
+  );
+  app.use(
+    '/volunteer',
+    process.env.environment === 'test'
+      ? volunteerRouter
+      : (ClerkExpressRequireAuth({}), volunteerRouter)
+  );
+  app.use(
+    '/invite',
+    process.env.environment === 'test'
+      ? inviteRouter
+      : (ClerkExpressRequireAuth({}), inviteRouter)
+  );
+  app.use(
+    '/accounts',
+    process.env.environment === 'test'
+      ? accountsRouter
+      : (ClerkExpressRequireAuth({}), accountsRouter)
+  );
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   app.use((err: any, _: any, res: any, __: any) => {
