@@ -118,7 +118,7 @@ describe('🧪 Test POST /invite/', () => {
   });
 });
 
-describe('🧪 Test GET /invite/:inviteId', () => {
+describe('🧪 Test GET /unp-invite/:inviteId', () => {
   it('should successfully get invite', done => {
     chai
       .request(server)
@@ -128,7 +128,7 @@ describe('🧪 Test GET /invite/:inviteId', () => {
         const inviteId = res.body._id;
         chai
           .request(server)
-          .get(`/invite/${inviteId}`)
+          .get(`/unp-invite/${inviteId}`)
           .then(res => {
             expect(res.status).to.equal(200);
             expect(res.body).to.be.an('object');
@@ -147,7 +147,7 @@ describe('🧪 Test GET /invite/:inviteId', () => {
   it('should fail to get invite with invalid inviteId', done => {
     chai
       .request(server)
-      .get('/invite/123')
+      .get('/unp-invite/123')
       .then(res => {
         expect(res.status).to.equal(400);
         expect(res.body).to.be.an('object');

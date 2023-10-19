@@ -30,6 +30,7 @@ const createServer = () => {
     app.use('/teacher', teacherRouter);
     app.use('/volunteer', volunteerRouter);
     app.use('/invite', inviteRouter);
+    app.use('/unp-invite', unprotectedInviteRouter);
     app.use('/accounts', accountsRouter);
   } else {
     app.use('/admin', ClerkExpressRequireAuth({}), adminRouter);
