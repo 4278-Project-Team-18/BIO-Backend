@@ -131,3 +131,36 @@ export const getAllInvites = async (_: Request, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const openInvite = async (req: Request, res: Response) => {
+  // get invite id from request params
+  const { inviteId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(inviteId)) {
+    return res.status(400).json({ error: 'Invalid inviteId.' });
+  }
+
+  try {
+    // find invite in database
+    const invite = await Invite.findById(inviteId);
+
+    console.log(invite);
+
+    // if invite is null return 400
+    if (!invite) {
+      return res.status(400).json({ error: 'No invite found.' });
+    }
+
+    // update invite status to opened
+    invite.status = Status.OPENED;
+
+    // save invite to database
+    await invite.save();
+
+    // return invite
+    return res.status(200).json(invite);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};

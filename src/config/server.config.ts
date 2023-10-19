@@ -3,8 +3,8 @@ import studentRouter from '../routes/student.router';
 import classRouter from '../routes/class.router';
 import teacherRouter from '../routes/teacher.router';
 import volunteerRouter from '../routes/volunteer.router';
-import inviteRouter from '../routes/invite.router';
 import accountsRouter from '../routes/accounts.router';
+import { inviteRouter, unprotectedInviteRouter } from '../routes/invite.router';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -38,13 +38,16 @@ const createServer = () => {
     app.use('/teacher', ClerkExpressRequireAuth({}), teacherRouter);
     app.use('/volunteer', ClerkExpressRequireAuth({}), volunteerRouter);
     app.use('/invite', ClerkExpressRequireAuth({}), inviteRouter);
+    app.use('/unp-invite', unprotectedInviteRouter);
     app.use('/accounts', ClerkExpressRequireAuth({}), accountsRouter);
   }
 
   /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
   app.use((err: any, _: any, res: any, __: any) => {
     console.error(err.stack);
-    res.status(403).send('Unauthenticated!');
+    res
+      .status(403)
+      .send({ message: "You're not authorized to access this endpoint!" });
   });
 
   // Create the server

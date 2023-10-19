@@ -1,6 +1,7 @@
 import Teacher from '../models/teacher.model';
 import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import Invite from '../models/invite.model';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
@@ -93,14 +94,29 @@ export const changeTeacherApproval = async (req: Request, res: Response) => {
   }
 
   try {
+    // get teacher object from database
     const teacherObj = await Teacher.findById(teacherId);
 
+    // return error if teacher is null
     if (!teacherObj) {
       return res.status(400).json({ error: 'cannot find teacher object' });
     }
 
+    // get the invite associated with the teacher email
+    const invite = await Invite.findOne({ email: teacherObj.email });
+
+    // return error if invite is null
+    if (!invite) {
+      return res.status(400).json({ error: 'cannot find invite object' });
+    }
+
+    // update the teacher and invite objects
     teacherObj.approvalStatus = newApprovalStatus;
+    invite.status = newApprovalStatus;
+
+    // save the updated objects
     await teacherObj.save();
+    await invite.save();
 
     return res.status(200).json(teacherObj);
   } catch (error: any) {
