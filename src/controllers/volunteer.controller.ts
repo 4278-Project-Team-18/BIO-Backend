@@ -111,17 +111,17 @@ export const changeVolunteerApproval = async (req: Request, res: Response) => {
     // get the invite associated with that email
     const invite = await Invite.findOne({ email: volunteerObj.email });
 
+    if (!invite) {
+      return res.status(400).json({ error: 'cannot find invite object' });
+    }
+
     // update the approval status of the volunteer and the invite
     volunteerObj.approvalStatus = newApprovalStatus;
+    invite.status = newApprovalStatus;
 
     // save the updated objects
     await volunteerObj.save();
-
-    // only update invite if it exists (for exception safety)
-    if (invite) {
-      invite.status = newApprovalStatus;
-      await invite.save();
-    }
+    await invite.save();
 
     return res.status(200).json(volunteerObj);
   } catch (error: any) {

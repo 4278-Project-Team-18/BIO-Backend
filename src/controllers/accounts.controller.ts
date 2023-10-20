@@ -2,9 +2,9 @@ import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Volunteer from '../models/volunteer.model';
 import Teacher from '../models/teacher.model';
 import Admin from '../models/admin.model';
-import { ApprovalStatus } from '../util/constants';
 import Invite from '../models/invite.model';
-import { Status } from '../interfaces/invite.interface';
+import { ApprovalStatus } from '../util/constants';
+import { InviteStatus } from '../interfaces/invite.interface';
 import type { Request, Response } from 'express';
 
 export const createAccount = async (req: Request, res: Response) => {
@@ -47,7 +47,7 @@ export const createAccount = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invite not found.' });
     }
 
-    invite.status = Status.COMPLETED;
+    invite.status = InviteStatus.COMPLETED;
     invite.email = email;
 
     // must create an object of the correct type conditionally

@@ -1,19 +1,27 @@
-import { ApprovalStatus } from '../../interfaces/constants';
+import { ApprovalStatus } from '../../util/constants';
 import { faker } from '@faker-js/faker';
-import type { Invite } from '../../interfaces/invite.interface';
+import type { Invite, Role } from '../../interfaces/invite.interface';
 import type { Volunteer } from '../../interfaces/volunteer.interface';
 import type { Teacher } from '../../interfaces/teacher.interface';
 import type { Class } from '../../interfaces/class.interface';
 import type { Student } from '../../interfaces/student.interface';
 import type { Admin } from '../../interfaces/admin.interface';
 
-export const createTestAdmin = () =>
-  ({
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
+export const createTestAdmin = () => {
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  const email = faker.internet.email({
+    firstName: firstName,
+    lastName: lastName,
+  });
+
+  return {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
     approvalStatus: randomApprovalStatus(),
-  }) as Admin;
+  } as Admin;
+};
 
 export const createTestStudent = () =>
   ({
@@ -28,26 +36,42 @@ export const createTestClass = () =>
     name: faker.word.adjective() + ' ' + faker.word.noun() + ' Class',
   }) as Class;
 
-export const createTestTeacher = () =>
-  ({
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
-    approvalStatus: randomApprovalStatus(),
-  }) as Teacher;
+export const createTestTeacher = () => {
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  const email = faker.internet.email({
+    firstName: firstName,
+    lastName: lastName,
+  });
 
-export const createTestVolunteer = () =>
-  ({
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
+  return {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
     approvalStatus: randomApprovalStatus(),
-  }) as Volunteer;
+  } as Teacher;
+};
 
-export const createTestInvite = () =>
+export const createTestVolunteer = () => {
+  const firstName = faker.person.firstName();
+  const lastName = faker.person.lastName();
+  const email = faker.internet.email({
+    firstName: firstName,
+    lastName: lastName,
+  });
+
+  return {
+    firstName: firstName,
+    lastName: lastName,
+    email: email,
+    approvalStatus: randomApprovalStatus(),
+  } as Volunteer;
+};
+
+export const createTestInvite = (role?: Role) =>
   ({
     email: faker.internet.email(),
-    role: randomRole(),
+    role: role || randomRole(),
   }) as Invite;
 
 export const randomApprovalStatus = () => {

@@ -1,7 +1,7 @@
 import { createTestInvite } from './testData/testData';
 import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
-import { Status } from '../interfaces/invite.interface';
+import { InviteStatus } from '../interfaces/invite.interface';
 import mongoose from 'mongoose';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
@@ -60,7 +60,7 @@ describe('🧪 Test POST /invite/', () => {
         // check for values
         expect(res.body.email).to.equal(TEST_INVITE.email);
         expect(res.body.role).to.equal(TEST_INVITE.role);
-        expect(res.body.status).to.equal(Status.SENT);
+        expect(res.body.status).to.equal(InviteStatus.SENT);
 
         done();
       })

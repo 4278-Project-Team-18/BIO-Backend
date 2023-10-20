@@ -1,4 +1,4 @@
-import type { ApprovalStatus } from './constants';
+import type { ApprovalStatus } from '../util/constants';
 
 export interface Volunteer {
   firstName: string;

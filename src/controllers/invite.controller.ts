@@ -1,5 +1,5 @@
 import Invite from '../models/invite.model';
-import { Status } from '../interfaces/invite.interface';
+import { InviteStatus } from '../interfaces/invite.interface';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { sendInviteEmail } from '../util/email';
 import Admin from '../models/admin.model';
@@ -65,7 +65,7 @@ export const sendInvite = async (req: Request, res: Response) => {
       email,
       sender: senderId,
       role,
-      status: Status.SENT,
+      status: InviteStatus.SENT,
     });
 
     // get sender, uncomment when we do auth
@@ -144,15 +144,13 @@ export const openInvite = async (req: Request, res: Response) => {
     // find invite in database
     const invite = await Invite.findById(inviteId);
 
-    console.log(invite);
-
     // if invite is null return 400
     if (!invite) {
       return res.status(400).json({ error: 'No invite found.' });
     }
 
     // update invite status to opened
-    invite.status = Status.OPENED;
+    invite.status = InviteStatus.OPENED;
 
     // save invite to database
     await invite.save();
