@@ -37,7 +37,7 @@ const NUM_TEST_TEACHERS_APPROVED = 10;
 const NUM_TEST_TEACHERS_DENIED = 2;
 
 // classes
-const NUM_TEST_CLASSES = 10;
+const NUM_TEST_CLASSES = 3;
 const NUM_TEST_STUDENTS_PER_CLASS = 10;
 
 // volunteers
