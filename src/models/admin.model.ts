@@ -11,6 +11,7 @@ const adminSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true, // no duplicate emails
     default: '',
   },
   approvalStatus: {

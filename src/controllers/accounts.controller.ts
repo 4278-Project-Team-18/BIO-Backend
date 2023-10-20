@@ -93,7 +93,12 @@ export const createAccount = async (req: Request, res: Response) => {
     // return error if user type is not valid
     return res.status(400).json({ error: 'Invalid user type.' });
   } catch (error: any) {
+    // if the error is a duplicate email error, return a more specific error message
     console.log(error);
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Email already exists.' });
+    }
+
     return res.status(500).json({ error: error.message });
   }
 };
