@@ -2,6 +2,7 @@ import Volunteer from '../models/volunteer.model';
 import Student from '../models/student.model';
 import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import Invite from '../models/invite.model';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
@@ -38,9 +39,38 @@ export const createVolunteer = async (req: Request, res: Response) => {
   }
 };
 
+export const getVolunteer = async (req: Request, res: Response) => {
+  const { volunteerId } = req.params;
+
+  // check if volunteer id is provided
+  if (!volunteerId) {
+    return res.status(400).json({ error: 'No volunteer id provided.' });
+  }
+
+  try {
+    const volunteer =
+      await Volunteer.findById(volunteerId).populate('matchedStudents');
+
+    if (!volunteer) {
+      return res.status(400).json({ error: 'Volunteer not found!' });
+    }
+
+    // return all volunteers
+    return res.status(200).json(volunteer);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const getVolunteers = async (req: Request, res: Response) => {
   try {
     const volunteers = await Volunteer.find({}).populate('matchedStudents');
+
+    // check if volunteers exist
+    if (!volunteers) {
+      return res.status(400).json({ error: 'Volunteers not found!' });
+    }
 
     // return all volunteers
     return res.status(200).json(volunteers);
@@ -70,14 +100,28 @@ export const changeVolunteerApproval = async (req: Request, res: Response) => {
   }
 
   try {
+    // get the volunteer object
     const volunteerObj = await Volunteer.findById(volunteerId);
 
+    // return error if volunteer is null
     if (!volunteerObj) {
       return res.status(400).json({ error: 'cannot find volunteer object' });
     }
 
+    // get the invite associated with that email
+    const invite = await Invite.findOne({ email: volunteerObj.email });
+
+    if (!invite) {
+      return res.status(400).json({ error: 'cannot find invite object' });
+    }
+
+    // update the approval status of the volunteer and the invite
     volunteerObj.approvalStatus = newApprovalStatus;
+    invite.status = newApprovalStatus;
+
+    // save the updated objects
     await volunteerObj.save();
+    await invite.save();
 
     return res.status(200).json(volunteerObj);
   } catch (error: any) {

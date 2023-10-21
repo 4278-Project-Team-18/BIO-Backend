@@ -11,11 +11,7 @@ const volunteerSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    default: '',
-  },
-  password: {
-    type: String,
-    required: true,
+    unique: true, // no duplicate emails
     default: '',
   },
   approvalStatus: {

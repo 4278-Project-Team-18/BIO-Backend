@@ -9,7 +9,7 @@ const studentRouter = express.Router();
 
 /* Student Controller */
 studentRouter.post('/', createStudent);
-studentRouter.get('/allStudents', getStudents);
+studentRouter.get('/', getStudents);
 studentRouter.patch('/:studentId', updateStudent);
 
 export = studentRouter;

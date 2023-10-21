@@ -1,6 +1,8 @@
+import type { ApprovalStatus } from '../util/constants';
+
 export interface Admin {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  approvalStatus: ApprovalStatus;
 }

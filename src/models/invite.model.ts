@@ -5,10 +5,9 @@ const inviteSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  senderId: {
+  sender: {
     type: Schema.Types.ObjectId,
     ref: 'Admin',
-    required: true,
   },
   role: {
     type: String,

@@ -1,9 +1,12 @@
+import { ApprovalStatus } from '../util/constants';
+import type { Admin } from './admin.interface';
+
 /* eslint-disable autofix/no-unused-vars */
 export interface Invite {
   email: string;
-  senderId: string;
+  sender: string | Admin;
   role: Role;
-  status: Status;
+  status: InviteStatus;
 }
 
 export enum Role {
@@ -12,10 +15,10 @@ export enum Role {
   VOLUNTEER = 'volunteer',
 }
 
-export enum Status {
+export enum InviteStatus {
   SENT = 'sent',
   OPENED = 'opened',
   COMPLETED = 'completed',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
+  APPROVED = ApprovalStatus.APPROVED,
+  REJECTED = ApprovalStatus.REJECTED,
 }

@@ -11,10 +11,7 @@ const teacherSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    required: true,
-  },
-  password: {
-    type: String,
+    unique: true, // no duplicate emails
     required: true,
   },
   approvalStatus: {

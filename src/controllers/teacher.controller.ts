@@ -1,6 +1,7 @@
 import Teacher from '../models/teacher.model';
 import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import Invite from '../models/invite.model';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
@@ -34,12 +35,35 @@ export const createTeacher = async (req: Request, res: Response) => {
   }
 };
 
+export const getTeacher = async (req: Request, res: Response) => {
+  const { teacherId } = req.params;
+
+  // check if teacher id is provided
+  if (!teacherId) {
+    return res.status(400).json({ error: 'No teacher id provided.' });
+  }
+
+  try {
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      return res.status(400).json({ error: 'Teacher not found!' });
+    }
+
+    // return teachers list
+    return res.status(200).json(teacher);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const getTeachers = async (req: Request, res: Response) => {
   try {
-    const teachers = await Teacher.find();
+    const teachers = await Teacher.find({});
 
-    if (!Teacher) {
-      return res.status(400).json({ error: 'Null Teachers object returned.' });
+    if (!teachers) {
+      return res.status(400).json({ error: 'Teachers not found!' });
     }
 
     // return teachers list
@@ -70,14 +94,29 @@ export const changeTeacherApproval = async (req: Request, res: Response) => {
   }
 
   try {
+    // get teacher object from database
     const teacherObj = await Teacher.findById(teacherId);
 
+    // return error if teacher is null
     if (!teacherObj) {
       return res.status(400).json({ error: 'cannot find teacher object' });
     }
 
+    // get the invite associated with the teacher email
+    const invite = await Invite.findOne({ email: teacherObj.email });
+
+    // return error if invite is null
+    if (!invite) {
+      return res.status(400).json({ error: 'cannot find invite object' });
+    }
+
+    // update the teacher and invite objects
     teacherObj.approvalStatus = newApprovalStatus;
+    invite.status = newApprovalStatus;
+
+    // save the updated objects
     await teacherObj.save();
+    await invite.save();
 
     return res.status(200).json(teacherObj);
   } catch (error: any) {

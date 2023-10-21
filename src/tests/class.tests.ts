@@ -117,7 +117,7 @@ describe('🧪 Test POST /class/', () => {
     // test request
     chai
       .request(server)
-      .get('/class/allClasses/')
+      .get('/class/')
       .then(res => {
         // check for response
         expect(res.status).to.equal(200);

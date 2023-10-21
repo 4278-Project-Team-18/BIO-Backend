@@ -1,7 +1,7 @@
 import { createTestInvite } from './testData/testData';
 import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
-import { Status } from '../interfaces/invite.interface';
+import { InviteStatus } from '../interfaces/invite.interface';
 import mongoose from 'mongoose';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
@@ -54,15 +54,13 @@ describe('🧪 Test POST /invite/', () => {
         // check for keys
         expect(res.body).to.have.property('_id');
         expect(res.body).to.have.property('email');
-        expect(res.body).to.have.property('senderId');
         expect(res.body).to.have.property('role');
         expect(res.body).to.have.property('status');
 
         // check for values
         expect(res.body.email).to.equal(TEST_INVITE.email);
-        expect(res.body.senderId).to.equal(TEST_INVITE.senderId);
         expect(res.body.role).to.equal(TEST_INVITE.role);
-        expect(res.body.status).to.equal(Status.SENT);
+        expect(res.body.status).to.equal(InviteStatus.SENT);
 
         done();
       })
@@ -120,7 +118,7 @@ describe('🧪 Test POST /invite/', () => {
   });
 });
 
-describe('🧪 Test GET /invite/:inviteId', () => {
+describe('🧪 Test GET /unp-invite/:inviteId', () => {
   it('should successfully get invite', done => {
     chai
       .request(server)
@@ -130,13 +128,12 @@ describe('🧪 Test GET /invite/:inviteId', () => {
         const inviteId = res.body._id;
         chai
           .request(server)
-          .get(`/invite/${inviteId}`)
+          .get(`/unp-invite/${inviteId}`)
           .then(res => {
             expect(res.status).to.equal(200);
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('_id');
             expect(res.body).to.have.property('email');
-            expect(res.body).to.have.property('senderId');
             expect(res.body).to.have.property('role');
             expect(res.body).to.have.property('status');
             done();
@@ -150,7 +147,7 @@ describe('🧪 Test GET /invite/:inviteId', () => {
   it('should fail to get invite with invalid inviteId', done => {
     chai
       .request(server)
-      .get('/invite/123')
+      .get('/unp-invite/123')
       .then(res => {
         expect(res.status).to.equal(400);
         expect(res.body).to.be.an('object');
@@ -180,7 +177,6 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
             expect(res.body).to.be.an('object');
             expect(res.body).to.have.property('_id');
             expect(res.body).to.have.property('email');
-            expect(res.body).to.have.property('senderId');
             expect(res.body).to.have.property('role');
             expect(res.body).to.have.property('status');
             done();

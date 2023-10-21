@@ -32,13 +32,25 @@ export const createAdmin = async (req: Request, res: Response) => {
   }
 };
 
-export const getAdmins = async (req: Request, res: Response) => {
+export const getAdmin = async (req: Request, res: Response) => {
+  const { adminId } = req.params;
+
+  // check if admin id is provided
+  if (!adminId) {
+    return res.status(400).json({ error: 'No admin id provided.' });
+  }
+
   try {
-    // find all admins in database
-    const admins = await Admin.find({});
+    // get admin from database
+    const admin = await Admin.findById(adminId);
+
+    // if admin is null return 400
+    if (!admin) {
+      return res.status(400).json({ error: 'No admin found.' });
+    }
 
     // return admins
-    return res.status(200).json(admins);
+    return res.status(200).json(admin);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
