@@ -1,6 +1,7 @@
 import { ApprovalStatus } from '../../util/constants';
+import { Role } from '../../interfaces/invite.interface';
 import { faker } from '@faker-js/faker';
-import type { Invite, Role } from '../../interfaces/invite.interface';
+import type { Invite } from '../../interfaces/invite.interface';
 import type { Volunteer } from '../../interfaces/volunteer.interface';
 import type { Teacher } from '../../interfaces/teacher.interface';
 import type { Class } from '../../interfaces/class.interface';
@@ -19,6 +20,7 @@ export const createTestAdmin = () => {
     firstName: firstName,
     lastName: lastName,
     email: email,
+    role: Role.ADMIN,
     approvalStatus: randomApprovalStatus(),
   } as Admin;
 };
@@ -48,6 +50,7 @@ export const createTestTeacher = () => {
     firstName: firstName,
     lastName: lastName,
     email: email,
+    role: Role.TEACHER,
     approvalStatus: randomApprovalStatus(),
   } as Teacher;
 };
@@ -64,6 +67,7 @@ export const createTestVolunteer = () => {
     firstName: firstName,
     lastName: lastName,
     email: email,
+    role: Role.VOLUNTEER,
     approvalStatus: randomApprovalStatus(),
   } as Volunteer;
 };

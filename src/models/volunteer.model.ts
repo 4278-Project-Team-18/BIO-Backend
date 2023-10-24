@@ -24,6 +24,10 @@ const volunteerSchema = new mongoose.Schema({
       ref: 'Student',
     },
   ],
+  role: {
+    type: String,
+    required: true,
+  },
 });
 
 const Volunteer = mongoose.model('Volunteer', volunteerSchema);
