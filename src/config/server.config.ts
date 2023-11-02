@@ -9,6 +9,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+import morgan from 'morgan';
 import http from 'http';
 
 const createServer = () => {
@@ -17,6 +18,11 @@ const createServer = () => {
   // Middleware
   app.use(express.json()); // Parse JSON bodies
   app.use(cors()); // Enable CORS
+
+  // Logging
+  if (process.env.ENVIRONMENT !== 'test') {
+    app.use(morgan('dev'));
+  }
 
   // Security
   app.use(helmet());
