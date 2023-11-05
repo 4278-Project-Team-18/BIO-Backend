@@ -10,6 +10,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import bodyparser from 'body-parser';
 import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
+import morgan from 'morgan';
 import http from 'http';
 
 const createServer = () => {
@@ -19,6 +20,11 @@ const createServer = () => {
   app.use(bodyparser.json({ limit: '5mb' }));
   app.use(express.json()); // Parse JSON bodies
   app.use(cors()); // Enable CORS
+
+  // Logging
+  if (process.env.ENVIRONMENT !== 'test') {
+    app.use(morgan('dev'));
+  }
 
   // Security
   app.use(helmet());

@@ -13,6 +13,7 @@ export const createAdmin = async (req: Request, res: Response) => {
 
   // check if admin object has all required keys and no extraneous keys
   const keyValidationString = verifyKeys(admin, KeyValidationType.ADMIN);
+
   if (keyValidationString) {
     return res.status(400).json({ error: keyValidationString });
   }
