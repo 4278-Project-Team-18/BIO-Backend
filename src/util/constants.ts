@@ -3,6 +3,7 @@ export const ADMIN_REQUIRED_KEYS = [
   'firstName',
   'lastName',
   'email',
+  'role',
   'approvalStatus',
 ];
 
@@ -10,6 +11,7 @@ export const ADMIN_ALL_KEYS = [
   'firstName',
   'lastName',
   'email',
+  'role',
   'approvalStatus',
 ];
 
@@ -40,6 +42,7 @@ export const TEACHER_REQUIRED_KEYS = [
   'lastName',
   'email',
   'approvalStatus',
+  'role',
 ];
 
 export const TEACHER_ALL_KEYS = [
@@ -47,6 +50,7 @@ export const TEACHER_ALL_KEYS = [
   'lastName',
   'email',
   'approvalStatus',
+  'role',
 ];
 
 export const VOLUNTEER_REQUIRED_KEYS = [
@@ -54,6 +58,7 @@ export const VOLUNTEER_REQUIRED_KEYS = [
   'lastName',
   'email',
   'approvalStatus',
+  'role',
 ];
 
 export const VOLUNTEER_ALL_KEYS = [
@@ -62,6 +67,7 @@ export const VOLUNTEER_ALL_KEYS = [
   'email',
   'approvalStatus',
   'matchedStudents',
+  'role',
 ];
 
 export const INVITE_REQUIRED_KEYS = ['email', 'role'];
@@ -76,10 +82,11 @@ export const ACCOUNTS_ALL_KEYS = [
   'firstName',
   'lastName',
   'email',
+  'role',
   'approvalStatus',
 ];
 
-export const ACCOUNTS_REQUIRED_KEYS = ['firstName', 'lastName', 'email'];
+export const ACCOUNTS_REQUIRED_KEYS = ['firstName', 'lastName', 'email', 'role'];
 
 export enum ApprovalStatus {
   PENDING = 'pending',

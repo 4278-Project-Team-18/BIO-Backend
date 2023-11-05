@@ -26,6 +26,7 @@ export const createAccount = async (req: Request, res: Response) => {
     firstName,
     lastName,
     email,
+    role,
     approvalStatus: ApprovalStatus.PENDING,
   };
 

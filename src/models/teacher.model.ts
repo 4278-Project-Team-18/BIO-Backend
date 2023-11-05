@@ -24,6 +24,10 @@ const teacherSchema = new mongoose.Schema({
       ref: 'Class',
     },
   ],
+  role: {
+    type: String,
+    required: true,
+  },
 });
 
 const Teacher = mongoose.model('Teacher', teacherSchema);

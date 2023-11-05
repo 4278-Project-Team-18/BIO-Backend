@@ -110,7 +110,7 @@ describe('🧪 Test POST /admin/', () => {
         // check for message
         expect(res.body).to.have.property('error');
         expect(res.body.error).to.equal(
-          'Missing keys: firstName, approvalStatus. '
+          'Missing keys: firstName, role, approvalStatus. '
         );
 
         // end test
