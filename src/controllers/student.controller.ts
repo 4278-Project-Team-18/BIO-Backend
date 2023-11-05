@@ -9,20 +9,20 @@ import type { Request, Response } from 'express';
 export const uploadErrorHandling = (error: any, res: any) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {
-      return res.json({
-        message: 'file size is too large',
+      return res.status(400).json({
+        error: 'file size is too large',
       });
     }
 
     if (error.code === 'LIMIT_FILE_COUNT') {
-      return res.json({
-        message: 'too many files uploaded at once',
+      return res.status(400).json({
+        error: 'too many files uploaded at once',
       });
     }
 
     if (error.code === 'LIMIT_UNEXPECTED_FILE') {
-      return res.json({
-        message: 'file can only be of type PDF',
+      return res.status(400).json({
+        error: 'file can only be of type PDF',
       });
     }
   }
@@ -153,6 +153,7 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
       .status(201)
       .json({ status: 'success', body: response, student: studentObj });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -185,6 +186,7 @@ export const uploadStudentLetter = async (req: any, res: Response) => {
       .status(201)
       .json({ status: 'success', body: response, student: studentObj });
   } catch (error: any) {
+    console.log(error);
     return res.status(500).json({ error: error.message });
   }
 };
