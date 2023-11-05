@@ -226,7 +226,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
 });
 
 describe('🧪 Test student letter upload', () => {
-  it('should successfully create student', done => {
+  it('should successfully create student and upload test', done => {
     // create random test student
     const TEST_STUDENT = createTestStudent();
     TEST_STUDENT.firstName = 'TEST';
@@ -265,92 +265,92 @@ describe('🧪 Test student letter upload', () => {
         done(err);
       });
   });
-});
 
-it("should create a student, a volunteer, match them, then upload a volunteer's letter", done => {
-  const TEST_VOLUNTEER = createTestVolunteer();
-  const TEST_STUDENT = createTestStudent();
-  TEST_VOLUNTEER.firstName = 'TEST_VOLUNTEER';
-  TEST_VOLUNTEER.lastName = 'TESTMAN';
-  TEST_STUDENT.firstName = 'TEST_STUDENT';
-  TEST_STUDENT.lastInitial = 'T';
+  it("should create a student, a volunteer, match them, then upload a volunteer's letter", done => {
+    const TEST_VOLUNTEER = createTestVolunteer();
+    const TEST_STUDENT = createTestStudent();
+    TEST_VOLUNTEER.firstName = 'TEST_VOLUNTEER';
+    TEST_VOLUNTEER.lastName = 'TESTMAN';
+    TEST_STUDENT.firstName = 'TEST_STUDENT';
+    TEST_STUDENT.lastInitial = 'T';
 
-  // create volunteer
-  chai
-    .request(server)
-    .post('/volunteer/')
-    .send(TEST_VOLUNTEER)
-    .then(volunteerRes => {
-      // check for response
-      expect(volunteerRes.status).to.equal(201);
-      expect(volunteerRes.body).to.be.an('object');
+    // create volunteer
+    chai
+      .request(server)
+      .post('/volunteer/')
+      .send(TEST_VOLUNTEER)
+      .then(volunteerRes => {
+        // check for response
+        expect(volunteerRes.status).to.equal(201);
+        expect(volunteerRes.body).to.be.an('object');
 
-      //create student
-      chai
-        .request(server)
-        .post('/student/')
-        .send(TEST_STUDENT)
-        .then(studentRes => {
-          // check for response
-          expect(studentRes.status).to.equal(201);
-          expect(studentRes.body).to.be.an('object');
+        //create student
+        chai
+          .request(server)
+          .post('/student/')
+          .send(TEST_STUDENT)
+          .then(studentRes => {
+            // check for response
+            expect(studentRes.status).to.equal(201);
+            expect(studentRes.body).to.be.an('object');
 
-          //match student and volunteer
-          chai
-            .request(server)
-            .patch('/volunteer/match')
-            .send({
-              volunteerId: volunteerRes.body._id,
-              studentIdArray: [studentRes.body._id],
-            })
-            .then(matchRes => {
-              // check for response
-              expect(matchRes.status).to.equal(200);
-              expect(matchRes.body).to.be.an('object');
+            //match student and volunteer
+            chai
+              .request(server)
+              .patch('/volunteer/match')
+              .send({
+                volunteerId: volunteerRes.body._id,
+                studentIdArray: [studentRes.body._id],
+              })
+              .then(matchRes => {
+                // check for response
+                expect(matchRes.status).to.equal(200);
+                expect(matchRes.body).to.be.an('object');
 
-              // check for correct values
+                // check for correct values
 
-              for (let i = 0; i < matchRes.body.students.length; ++i) {
-                expect(matchRes.body.students[i].matchedVolunteer).to.equal(
-                  volunteerRes.body._id
-                );
-                expect(
-                  matchRes.body.volunteer.matchedStudents.includes(
-                    matchRes.body.students[i]._id
-                  )
-                );
-              }
-
-              //match student and volunteer
-              chai
-                .request(server)
-                .post(`/student/${studentRes.body._id}/uploadVolunteerLetter`)
-                .field('volunteerId', volunteerRes.body._id)
-                .attach('file', __dirname + '/chai-test.pdf', 'chai-test.pdf')
-                .then(res => {
-                  // check for response
-                  expect(res.status).to.equal(201);
-                  expect(res.body).to.be.an('object');
-                  // check for matching fields
-                  expect(res.body.body.Location).to.equal(
-                    res.body.student.volunteerLetterLink
+                for (let i = 0; i < matchRes.body.students.length; ++i) {
+                  expect(matchRes.body.students[i].matchedVolunteer).to.equal(
+                    volunteerRes.body._id
                   );
-                  // end test
-                  done();
-                })
-                .catch(err => {
-                  done(err);
-                });
-            })
-            .catch(err => {
-              done(err);
-            });
-        })
-        .catch(err => {
-          done(err);
-        });
-    })
-    .catch(err => {
-      done(err);
-    });
+                  expect(
+                    matchRes.body.volunteer.matchedStudents.includes(
+                      matchRes.body.students[i]._id
+                    )
+                  );
+                }
+
+                //match student and volunteer
+                chai
+                  .request(server)
+                  .post(`/student/${studentRes.body._id}/uploadVolunteerLetter`)
+                  .field('volunteerId', volunteerRes.body._id)
+                  .attach('file', __dirname + '/chai-test.pdf', 'chai-test.pdf')
+                  .then(res => {
+                    // check for response
+                    expect(res.status).to.equal(201);
+                    expect(res.body).to.be.an('object');
+                    // check for matching fields
+                    expect(res.body.body.Location).to.equal(
+                      res.body.student.volunteerLetterLink
+                    );
+                    // end test
+                    done();
+                  })
+                  .catch(err => {
+                    done(err);
+                  });
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
 });
