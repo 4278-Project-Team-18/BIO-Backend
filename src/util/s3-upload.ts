@@ -1,18 +1,28 @@
-import { S3 } from 'aws-sdk';
+import AWS from 'aws-sdk';
 
 export const uploadToS3 = async (
   file: any,
   isStudent: boolean,
   mongoObj: any
 ) => {
-  const s3 = new S3();
+  //initialize s3 object
+  const s3 = new AWS.S3({
+    accessKeyId: process.env.accessKeyId,
+    secretAccessKey: process.env.secretAccessKey,
+    region: process.env.REGION,
+  });
+
+  //set naming convention depending on student vs. volunteer letter
   const folder = isStudent ? 'student-letters' : 'volunteer-letters';
   const tag = isStudent ? 'student' : 'volunteer';
+
+  //defining parameters for s3 upload
   const param = {
     Bucket: process.env.S3_BUCKET ? process.env.S3_BUCKET : '',
     Key: `${folder}/${mongoObj.firstName}-${mongoObj.lastInitial}-${tag}-letter-${mongoObj._id}-${file.originalname}`,
     Body: file.buffer,
   };
-  console.log('reached here');
+
+  //upload to s3
   return await s3.upload(param).promise();
 };
