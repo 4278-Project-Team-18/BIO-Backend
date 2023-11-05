@@ -148,13 +148,14 @@ export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
     const volunteerObj = await Volunteer.findById(volunteerId);
 
     //get all student objects
-    let studentPromises = [];
+    let studentPromises = [] as Promise<any>[];
     for (let i = 0; i < studentIdArray.length; ++i) {
       const currentStudentId = studentIdArray[i];
       if (!mongoose.Types.ObjectId.isValid(currentStudentId)) {
         return res.status(400).json({ error: 'Invalid student ID.' });
       }
-      studentPromises.push(Student.findById(currentStudentId));
+      const currentStudent = Student.findById(currentStudentId);
+      studentPromises.push(currentStudent);
     }
 
     const studentObjArr = await Promise.all(studentPromises);
