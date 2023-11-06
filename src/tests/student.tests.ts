@@ -329,7 +329,7 @@ describe('🧪 Test student letter upload', () => {
                   .then(res => {
                     // check for response
                     console.log(res);
-                    expect(res.body).to.be.an('array');
+                    expect(res.body).to.be.an('object');
                     expect(res.status).to.equal(201);
 
                     // check for matching fields

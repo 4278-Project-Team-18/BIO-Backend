@@ -18,7 +18,7 @@ export const uploadToS3 = async (
 
   //defining parameters for s3 upload
   const param = {
-    Bucket: process.env.S3_BUCKET ? process.env.S3_BUCKET : '',
+    Bucket: 'bio-letters-bucket',
     Key: `${folder}/${mongoObj.firstName}-${mongoObj.lastInitial}-${tag}-letter-${mongoObj._id}-${file.originalname}`,
     Body: file.buffer,
   };
