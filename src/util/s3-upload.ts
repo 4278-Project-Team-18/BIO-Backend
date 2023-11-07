@@ -22,7 +22,7 @@ export const uploadToS3 = async (
   //defining parameters for s3 upload
   const param = {
     Bucket: bucket,
-    Key: `${folder}/${mongoObj.firstName}-${mongoObj.lastInitial}-${tag}-letter-${mongoObj._id}-${file.originalname}`,
+    Key: `${folder}/${mongoObj.firstName}-${mongoObj.lastInitial}-${tag}-letter-${mongoObj._id}`,
     Body: file.buffer,
   };
 
