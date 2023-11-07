@@ -129,6 +129,10 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
   }
 
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: 'Invalid student ID' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
     return res.status(400).json({ error: 'Invalid volunteer ID' });
   }
 
@@ -139,14 +143,18 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
       return res.status(400).json({ error: 'failed to find student object' });
     }
 
+    //if volunteer is not matched to the student return error
     if (studentObj.matchedVolunteer != volunteerId) {
       return res
         .status(400)
         .json({ error: 'volunteer is not matched to the student requested' });
     }
-    const response = await uploadToS3(req.file, false, studentObj);
-    studentObj.volunteerLetterLink = response.Location;
 
+    //call upload with isStudent = false since this is a volunteer letter
+    const response = await uploadToS3(req.file, false, studentObj);
+
+    //update object and save
+    studentObj.volunteerLetterLink = response.Location;
     await studentObj.save();
 
     return res
@@ -161,12 +169,14 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
 export const uploadStudentLetter = async (req: any, res: Response) => {
   const { studentId } = req.params;
 
+  //check if studentId is present
   if (!studentId) {
-    return res.status(400).json({ error: 'no volunteer ID provided' });
+    return res.status(400).json({ error: 'no student ID provided' });
   }
 
+  //check if studentId is valid
   if (!mongoose.Types.ObjectId.isValid(studentId)) {
-    return res.status(400).json({ error: 'Invalid volunteer ID' });
+    return res.status(400).json({ error: 'Invalid student ID' });
   }
 
   try {
@@ -176,10 +186,11 @@ export const uploadStudentLetter = async (req: any, res: Response) => {
       return res.status(400).json({ error: 'failed to find student object' });
     }
 
-    //calls parseFile with parameters of parse
+    //calls upload to s3 with parameter isStudent = true
     const response = await uploadToS3(req.file, true, studentObj);
-    studentObj.studentLetterLink = response.Location;
 
+    //update object and save
+    studentObj.studentLetterLink = response.Location;
     await studentObj.save();
 
     return res

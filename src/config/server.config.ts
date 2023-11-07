@@ -17,7 +17,7 @@ const createServer = () => {
   const app = express();
 
   // Middleware
-  app.use(bodyparser.json({ limit: '5mb' }));
+  app.use(bodyparser.json({ limit: '5mb' })); //file size limit specification to receive PDFs
   app.use(express.json()); // Parse JSON bodies
   app.use(cors()); // Enable CORS
 

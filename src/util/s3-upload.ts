@@ -16,6 +16,7 @@ export const uploadToS3 = async (
   const folder = isStudent ? 'student-letters' : 'volunteer-letters';
   const tag = isStudent ? 'student' : 'volunteer';
 
+  //setting bucket
   const bucket: string = process.env.S3_BUCKET ? process.env.S3_BUCKET : '';
 
   //defining parameters for s3 upload

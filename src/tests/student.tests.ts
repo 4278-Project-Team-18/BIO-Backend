@@ -328,7 +328,6 @@ describe('🧪 Test student letter upload', () => {
                   .attach('file', __dirname + '/chai-test.pdf', 'chai-test.pdf')
                   .then(res => {
                     // check for response
-                    console.log(res);
                     expect(res.body).to.be.an('object');
                     expect(res.status).to.equal(201);
 
