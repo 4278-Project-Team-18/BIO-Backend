@@ -8,6 +8,7 @@ import { inviteRouter, unprotectedInviteRouter } from '../routes/invite.router';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import bodyparser from 'body-parser';
 import { ClerkExpressRequireAuth } from '@clerk/clerk-sdk-node';
 import morgan from 'morgan';
 import http from 'http';
@@ -16,6 +17,7 @@ const createServer = () => {
   const app = express();
 
   // Middleware
+  app.use(bodyparser.json({ limit: '5mb' })); //file size limit specification to receive PDFs
   app.use(express.json()); // Parse JSON bodies
   app.use(cors()); // Enable CORS
 

@@ -1,7 +1,33 @@
 import Student from '../models/student.model';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import { uploadToS3 } from '../util/s3-upload';
+import multer from 'multer';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
+
+//upload letter error handling
+export const uploadErrorHandling = (error: any, res: any) => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        error: 'file size is too large',
+      });
+    }
+
+    if (error.code === 'LIMIT_FILE_COUNT') {
+      return res.status(400).json({
+        error: 'too many files uploaded at once',
+      });
+    }
+
+    if (error.code === 'LIMIT_UNEXPECTED_FILE') {
+      return res.status(400).json({
+        error: 'file can only be of type PDF',
+      });
+    }
+  }
+  return res.status(400).json({ error: error });
+};
 
 export const createStudent = async (req: Request, res: Response) => {
   // get student object from request body
@@ -84,6 +110,92 @@ export const updateStudent = async (req: Request, res: Response) => {
     }
 
     return res.status(200).json(updatedStudent);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const uploadVolunteerLetter = async (req: any, res: Response) => {
+  const { studentId } = req.params;
+  const { volunteerId } = req.body;
+
+  if (!studentId) {
+    return res.status(400).json({ error: 'no student ID provided' });
+  }
+
+  if (!volunteerId) {
+    return res.status(400).json({ error: 'no volunteer ID provided ' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: 'Invalid student ID' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+    return res.status(400).json({ error: 'Invalid volunteer ID' });
+  }
+
+  try {
+    const studentObj = await Student.findById(studentId);
+
+    if (!studentObj) {
+      return res.status(400).json({ error: 'failed to find student object' });
+    }
+
+    //if volunteer is not matched to the student return error
+    if (studentObj.matchedVolunteer != volunteerId) {
+      return res
+        .status(400)
+        .json({ error: 'volunteer is not matched to the student requested' });
+    }
+
+    //call upload with isStudent = false since this is a volunteer letter
+    const response = await uploadToS3(req.file, false, studentObj);
+
+    //update object and save
+    studentObj.volunteerLetterLink = response.Location;
+    await studentObj.save();
+
+    return res
+      .status(201)
+      .json({ status: 'success', body: response, student: studentObj });
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const uploadStudentLetter = async (req: any, res: Response) => {
+  const { studentId } = req.params;
+
+  //check if studentId is present
+  if (!studentId) {
+    return res.status(400).json({ error: 'no student ID provided' });
+  }
+
+  //check if studentId is valid
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: 'Invalid student ID' });
+  }
+
+  try {
+    const studentObj = await Student.findById(studentId);
+
+    if (!studentObj) {
+      return res.status(400).json({ error: 'failed to find student object' });
+    }
+
+    //calls upload to s3 with parameter isStudent = true
+    const response = await uploadToS3(req.file, true, studentObj);
+
+    //update object and save
+    studentObj.studentLetterLink = response.Location;
+    await studentObj.save();
+
+    return res
+      .status(201)
+      .json({ status: 'success', body: response, student: studentObj });
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
