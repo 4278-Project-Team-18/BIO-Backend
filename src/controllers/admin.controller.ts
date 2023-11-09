@@ -1,5 +1,8 @@
 import Admin from '../models/admin.model';
+import Invite from '../models/invite.model';
+import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
+import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
 export const createAdmin = async (req: Request, res: Response) => {
@@ -54,6 +57,70 @@ export const getAdmin = async (req: Request, res: Response) => {
     return res.status(200).json(admin);
   } catch (error: any) {
     console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const getAdmins = async (req: Request, res: Response) => {
+  try {
+    const admins = await Admin.find({});
+
+    if (!admins) {
+      return res.status(400).json({ error: 'Admins not found!' });
+    }
+
+    // return admins list
+    return res.status(200).json(admins);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const changeAdminApproval = async (req: Request, res: Response) => {
+  const { adminId } = req.params;
+
+  const { newApprovalStatus } = req.body;
+
+  if (!adminId) {
+    return res.status(400).json({ error: 'No admin id provided.' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(adminId)) {
+    return res.status(400).json({ error: 'Invalid admin ID.' });
+  }
+
+  if (!Object.values(ApprovalStatus).includes(newApprovalStatus)) {
+    return res.status(400).json({ error: 'Invalid new status string for admin' });
+  }
+
+  try {
+    // get admin object from database
+    const adminObj = await Admin.findById(adminId);
+
+    // return error if admin is null
+    if (!adminObj) {
+      return res.status(400).json({ error: 'cannot find admin object' });
+    }
+
+    // get the invite associated with the admin email
+    const invite = await Invite.findOne({ email: adminObj.email });
+
+    // return error if invite is null
+    if (!invite) {
+      return res.status(400).json({ error: 'cannot find invite object' });
+    }
+
+    // update the admin and invite objects
+    adminObj.approvalStatus = newApprovalStatus;
+    invite.status = newApprovalStatus;
+
+    // save the updated objects
+    await adminObj.save();
+    await invite.save();
+
+    return res.status(200).json(adminObj);
+  } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
 };
