@@ -36,7 +36,7 @@ export const getInvite = async (req: Request, res: Response) => {
 
 export const sendInvite = async (req: Request, res: Response) => {
   // get email, role, and status from request body
-  const { email, role, sender: senderId } = req.body;
+  const { email, role, senderId } = req.body;
 
   if (!req.body || Object.keys(req.body).length === 0) {
     return res.status(400).json({ error: 'No invite object provided.' });
@@ -71,9 +71,9 @@ export const sendInvite = async (req: Request, res: Response) => {
     // get sender, uncomment when we do auth
     const sender = (await Admin.findById(senderId)) as AdminInterface;
 
-    if (process.env.ENVIRONMENT === 'production') {
-      sendInviteEmail(role, email, sender);
-    }
+    // if (process.env.ENVIRONMENT === 'production') {
+    await sendInviteEmail(role, email, sender);
+    // }
 
     // save new invite to database
     await newInvite.save();

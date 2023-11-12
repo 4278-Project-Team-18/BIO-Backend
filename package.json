@@ -16,6 +16,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.445.0",
+    "@aws-sdk/credential-providers": "^3.445.0",
     "@clerk/clerk-sdk-node": "^4.12.14",
     "@types/morgan": "^1.9.7",
     "aws-sdk": "^2.1472.0",
