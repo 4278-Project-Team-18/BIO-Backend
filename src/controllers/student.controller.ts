@@ -157,9 +157,7 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
     studentObj.volunteerLetterLink = response.Location;
     await studentObj.save();
 
-    return res
-      .status(201)
-      .json({ status: 'success', body: response, student: studentObj });
+    return res.status(201).json(studentObj);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
@@ -193,9 +191,7 @@ export const uploadStudentLetter = async (req: any, res: Response) => {
     studentObj.studentLetterLink = response.Location;
     await studentObj.save();
 
-    return res
-      .status(201)
-      .json({ status: 'success', body: response, student: studentObj });
+    return res.status(201).json(studentObj);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });

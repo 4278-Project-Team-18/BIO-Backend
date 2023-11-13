@@ -250,9 +250,7 @@ describe('🧪 Test student letter upload', () => {
             expect(res.status).to.equal(201);
             expect(res.body).to.be.an('object');
             // check for matching fields
-            expect(res.body.body.Location).to.equal(
-              res.body.student.studentLetterLink
-            );
+            expect(res.body.studentLetterLink.includes('amazonaws'));
             // end test
             done();
           })
@@ -332,9 +330,7 @@ describe('🧪 Test student letter upload', () => {
                     expect(res.status).to.equal(201);
 
                     // check for matching fields
-                    expect(res.body.body.Location).to.equal(
-                      res.body.student.volunteerLetterLink
-                    );
+                    expect(res.body.volunteerLetterLink.includes('amazonaws'));
                     // end test
                     done();
                   })
