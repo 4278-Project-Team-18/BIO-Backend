@@ -28,7 +28,7 @@ export const sendInviteEmail = async (
   });
 
   // Base URL for email link
-  const baseURL = 'https://bio-frontend-theta.vercel.app/sign-up';
+  const baseURL = 'https://bio-frontend.fly.dev/sign-up/';
 
   // const senderAdmin = await Admin.findById(senderId);
 
