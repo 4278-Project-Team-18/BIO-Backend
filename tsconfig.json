@@ -9,6 +9,10 @@
     "target": "es6",
     "skipLibCheck": true,
     "strict": true,
+    
     "noImplicitAny": false,
+  },
+  "ts-node": {
+    "files": true
   }
 }
