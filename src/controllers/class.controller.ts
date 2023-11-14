@@ -81,7 +81,7 @@ export const getClasses = async (
       }
 
       const classes = await Class.find({
-        teacherId: role === 'teacher' ? teacher._id : undefined,
+        teacherId: teacher._id,
       }).populate('students');
 
       return res.status(200).json(classes);
