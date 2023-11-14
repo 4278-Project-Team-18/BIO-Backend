@@ -1,10 +1,13 @@
 import Class from '../models/class.model';
 import Student from '../models/student.model';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
-
 import Teacher from '../models/teacher.model';
+import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
 import type { Request, Response } from 'express';
+dotenv.config();
 
 /**
  * Create a new class with no students and add it to the database.
@@ -57,17 +60,40 @@ export const createClass = async (req: Request, res: Response) => {
 /**
  * Get all classes from database.
  */
-export const getClasses = async (_: Request, res: Response) => {
-  try {
-    const classes = await Class.find({}).populate('students');
+export const getClasses = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
+  const { role, email } = getUserFromRequest(req);
 
-    // if classes is null return 400
-    if (!classes) {
-      return res.status(400).json({ error: 'No classes found.' });
+  if (role === 'volunteer') {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
+  }
+
+  try {
+    if (role === 'teacher') {
+      const teacher = await Teacher.findOne({ email: email });
+
+      if (!teacher) {
+        return res.status(400).json({ error: 'Teacher does not exist.' });
+      }
+
+      const classes = await Class.find({
+        teacherId: role === 'teacher' ? teacher._id : undefined,
+      }).populate('students');
+
+      return res.status(200).json(classes);
     }
 
-    // return new class
-    return res.status(200).json(classes);
+    if (role === 'admin') {
+      const classes = await Class.find().populate('students');
+
+      return res.status(200).json(classes);
+    }
+
+    return res.status(400).json({ error: 'Invalid role.' });
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });

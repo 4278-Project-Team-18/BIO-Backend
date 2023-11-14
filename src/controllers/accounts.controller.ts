@@ -5,11 +5,14 @@ import Admin from '../models/admin.model';
 import Invite from '../models/invite.model';
 import { ApprovalStatus } from '../util/constants';
 import { InviteStatus } from '../interfaces/invite.interface';
+import { clerkClient } from '@clerk/clerk-sdk-node';
+import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
+dotenv.config();
 
 export const createAccount = async (req: Request, res: Response) => {
   // get student object from request body
-  const { firstName, lastName, email, role, inviteId } = req.body;
+  const { firstName, lastName, email, role, inviteId, userId } = req.body;
 
   // check if invite id is provided
   if (!inviteId) {
@@ -61,6 +64,12 @@ export const createAccount = async (req: Request, res: Response) => {
       await newAdmin.save();
       await invite.save();
 
+      await clerkClient.users.updateUserMetadata(userId, {
+        publicMetadata: {
+          role,
+        },
+      });
+
       // return new admin
       return res.status(201).json(newAdmin);
     }
@@ -74,6 +83,12 @@ export const createAccount = async (req: Request, res: Response) => {
       await newVolunteer.save();
       await invite.save();
 
+      await clerkClient.users.updateUserMetadata(userId, {
+        publicMetadata: {
+          role,
+        },
+      });
+
       // return new Volunteer
       return res.status(201).json(newVolunteer);
     }
@@ -86,6 +101,12 @@ export const createAccount = async (req: Request, res: Response) => {
       // save new teacher and invite to database
       await newTeacher.save();
       await invite.save();
+
+      await clerkClient.users.updateUserMetadata(userId, {
+        publicMetadata: {
+          role,
+        },
+      });
 
       // return new teacher
       return res.status(201).json(newTeacher);
