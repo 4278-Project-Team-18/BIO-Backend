@@ -71,8 +71,11 @@ export const sendInvite = async (req: Request, res: Response) => {
     // get sender, uncomment when we do auth
     const sender = (await Admin.findById(senderId)) as AdminInterface;
 
+    // get invite id
+    const inviteIDString = newInvite._id.toString();
+
     // if (process.env.ENVIRONMENT === 'production') {
-    await sendInviteEmail(role, email, sender);
+    await sendInviteEmail(email, sender, inviteIDString);
     // }
 
     // save new invite to database

@@ -4,8 +4,8 @@ import {
   UpdateTemplateCommand,
 } from '@aws-sdk/client-ses';
 import { fromEnv } from '@aws-sdk/credential-providers';
+import fs from 'fs';
 import type { Admin } from '../interfaces/admin.interface';
-import type { Role } from '../interfaces/invite.interface';
 
 /**
  * Sends an email to the specified email address with a link to accept the invitation.
@@ -15,18 +15,12 @@ import type { Role } from '../interfaces/invite.interface';
  * @param email The email address of the invitee.
  */
 export const sendInviteEmail = async (
-  role: Role,
   email: string,
-  sender: Admin | null
+  sender: Admin | null,
+  inviteID: string
 ) => {
   console.log('called sendInviteEmail');
 
-  // auth config
-  // const ses = new AWS.SES({
-  //   accessKeyId: process.env.accessKeyId,
-  //   secretAccessKey: process.env.secretAccessKey,
-  //   region: process.env.REGION,
-  // });
   // auth config
   const ses = new SESClient({
     region: process.env.REGION,
@@ -34,26 +28,25 @@ export const sendInviteEmail = async (
   });
 
   // Base URL for email link
-  const baseURL = 'https://book-i-own/invite/accept/';
+  const baseURL = 'https://bio-frontend-theta.vercel.app/sign-up';
 
   // const senderAdmin = await Admin.findById(senderId);
 
   // Template data from request body
   const data = {
     senderName: sender?.firstName || 'Albert',
-    newRole: role,
-    link: baseURL,
+    link: baseURL + inviteID,
   };
+
+  // Read HTML file
+  const template = readHTMLFile('src/email-templates/inviteTemplate.html');
 
   // Email Template
   const emailTemplate = {
     Template: {
       TemplateName: 'BIOInvitation',
       SubjectPart: 'Book I Own Invitation',
-      HtmlPart:
-        '<h1>Hello!</h1><p>You have been invited to join Book I Own as a {{newRole}} by {{senderName}}. Please click the link below to accept the invitation.</p><p><a href="{{link}}">Accept Invitation</a></p>',
-      TextPart:
-        'Hello!\nYou have been invited to join Book I Own as a {{newRole}} by {{senderName}}. Please click the link below to accept the invitation.\n{{link}}',
+      HtmlPart: template,
     },
   };
 
@@ -73,3 +66,12 @@ export const sendInviteEmail = async (
   await ses.send(new SendTemplatedEmailCommand(params));
   console.log('Email sent');
 };
+
+function readHTMLFile(filePath: string): string {
+  try {
+    return fs.readFileSync(filePath, 'utf-8');
+  } catch (error) {
+    console.error('Error reading HTML file:', error);
+    return '';
+  }
+}
