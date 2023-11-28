@@ -2,124 +2,172 @@ import Teacher from '../models/teacher.model';
 import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Invite from '../models/invite.model';
+import { Role } from '../interfaces/invite.interface';
+import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
 export const createTeacher = async (req: Request, res: Response) => {
-  // get teacher object from request body
-  const teacher = req.body;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  // check if teacher object is provided
-  if (!teacher || Object.keys(teacher).length === 0) {
-    return res.status(400).json({ error: 'No teacher object provided.' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  // check if teacher object has all required keys and no extraneous keys
-  const keyValidationString = verifyKeys(teacher, KeyValidationType.TEACHER);
-  if (keyValidationString) {
-    return res.status(400).json({ error: keyValidationString });
-  }
+  if (role === Role.ADMIN) {
+    // get teacher object from request body
+    const teacher = req.body;
 
-  try {
-    // create new teacher mongo object
-    const newTeacher = new Teacher(teacher);
+    // check if teacher object is provided
+    if (!teacher || Object.keys(teacher).length === 0) {
+      return res.status(400).json({ error: 'No teacher object provided.' });
+    }
 
-    // save new teacher to database
-    await newTeacher.save();
+    // check if teacher object has all required keys and no extraneous keys
+    const keyValidationString = verifyKeys(teacher, KeyValidationType.TEACHER);
+    if (keyValidationString) {
+      return res.status(400).json({ error: keyValidationString });
+    }
 
-    // return new teacher
-    return res.status(201).json(newTeacher);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+    try {
+      // create new teacher mongo object
+      const newTeacher = new Teacher(teacher);
+
+      // save new teacher to database
+      await newTeacher.save();
+
+      // return new teacher
+      return res.status(201).json(newTeacher);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
   }
 };
 
 export const getTeacher = async (req: Request, res: Response) => {
-  const { teacherId } = req.params;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  // check if teacher id is provided
-  if (!teacherId) {
-    return res.status(400).json({ error: 'No teacher id provided.' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  try {
-    const teacher = await Teacher.findById(teacherId);
+  if (role === Role.ADMIN) {
+    const { teacherId } = req.params;
 
-    if (!teacher) {
-      return res.status(400).json({ error: 'Teacher not found!' });
+    // check if teacher id is provided
+    if (!teacherId) {
+      return res.status(400).json({ error: 'No teacher id provided.' });
     }
 
-    // return teachers list
-    return res.status(200).json(teacher);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+    try {
+      const teacher = await Teacher.findById(teacherId);
+
+      if (!teacher) {
+        return res.status(400).json({ error: 'Teacher not found!' });
+      }
+
+      // return teachers list
+      return res.status(200).json(teacher);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
   }
 };
 
 export const getTeachers = async (req: Request, res: Response) => {
-  try {
-    const teachers = await Teacher.find({});
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-    if (!teachers) {
-      return res.status(400).json({ error: 'Teachers not found!' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
+  }
+
+  if (role === Role.ADMIN) {
+    try {
+      const teachers = await Teacher.find({});
+
+      if (!teachers) {
+        return res.status(400).json({ error: 'Teachers not found!' });
+      }
+
+      // return teachers list
+      return res.status(200).json(teachers);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
     }
-
-    // return teachers list
-    return res.status(200).json(teachers);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
   }
 };
 
 export const changeTeacherApproval = async (req: Request, res: Response) => {
-  const { teacherId } = req.params;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  const { newApprovalStatus } = req.body;
-
-  if (!teacherId) {
-    return res.status(400).json({ error: 'No teacher id provided.' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  if (!mongoose.Types.ObjectId.isValid(teacherId)) {
-    return res.status(400).json({ error: 'Invalid teacher ID.' });
-  }
+  if (role === Role.ADMIN) {
+    const { teacherId } = req.params;
 
-  if (!Object.values(ApprovalStatus).includes(newApprovalStatus)) {
-    return res
-      .status(400)
-      .json({ error: 'Invalid new status string for teacher' });
-  }
+    const { newApprovalStatus } = req.body;
 
-  try {
-    // get teacher object from database
-    const teacherObj = await Teacher.findById(teacherId);
-
-    // return error if teacher is null
-    if (!teacherObj) {
-      return res.status(400).json({ error: 'cannot find teacher object' });
+    if (!teacherId) {
+      return res.status(400).json({ error: 'No teacher id provided.' });
     }
 
-    // get the invite associated with the teacher email
-    const invite = await Invite.findOne({ email: teacherObj.email });
-
-    // return error if invite is null
-    if (!invite) {
-      return res.status(400).json({ error: 'cannot find invite object' });
+    if (!mongoose.Types.ObjectId.isValid(teacherId)) {
+      return res.status(400).json({ error: 'Invalid teacher ID.' });
     }
 
-    // update the teacher and invite objects
-    teacherObj.approvalStatus = newApprovalStatus;
-    invite.status = newApprovalStatus;
+    if (!Object.values(ApprovalStatus).includes(newApprovalStatus)) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid new status string for teacher' });
+    }
 
-    // save the updated objects
-    await teacherObj.save();
-    await invite.save();
+    try {
+      // get teacher object from database
+      const teacherObj = await Teacher.findById(teacherId);
 
-    return res.status(200).json(teacherObj);
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+      // return error if teacher is null
+      if (!teacherObj) {
+        return res.status(400).json({ error: 'cannot find teacher object' });
+      }
+
+      // get the invite associated with the teacher email
+      const invite = await Invite.findOne({ email: teacherObj.email });
+
+      // return error if invite is null
+      if (!invite) {
+        return res.status(400).json({ error: 'cannot find invite object' });
+      }
+
+      // update the teacher and invite objects
+      teacherObj.approvalStatus = newApprovalStatus;
+      invite.status = newApprovalStatus;
+
+      // save the updated objects
+      await teacherObj.save();
+      await invite.save();
+
+      return res.status(200).json(teacherObj);
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
   }
+
+  return res.status(400).json({ error: 'Invalid role.' });
 };
