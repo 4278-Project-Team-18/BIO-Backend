@@ -5,6 +5,7 @@ import {
   uploadVolunteerLetter,
   uploadStudentLetter,
   uploadErrorHandling,
+  addBookLink,
 } from '../controllers/student.controller';
 import multer from 'multer';
 import express from 'express';
@@ -29,6 +30,7 @@ const upload = multer({
 studentRouter.post('/', createStudent);
 studentRouter.get('/', getStudents);
 studentRouter.patch('/:studentId', updateStudent);
+studentRouter.patch('/:studentId/addBookLink', addBookLink);
 studentRouter.post(
   '/:studentId/uploadVolunteerLetter',
   upload.single('file'),

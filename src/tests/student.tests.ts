@@ -223,6 +223,97 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
         done(err);
       });
   });
+
+  it('should successfully change student book link', done => {
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // test request
+    chai
+      .request(server)
+      .post('/student/')
+      .send(TEST_STUDENT)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // check for keys
+        expect(res.body).to.have.property('_id');
+        expect(res.body).to.have.property('firstName');
+        expect(res.body).to.have.property('lastInitial');
+        expect(res.body).to.have.property('readingLevel');
+
+        // check for values
+        expect(res.body.firstName).to.equal(TEST_STUDENT.firstName);
+        expect(res.body.lastInitial).to.equal(TEST_STUDENT.lastInitial);
+        expect(res.body.readingLevel).to.equal(TEST_STUDENT.readingLevel);
+
+        chai
+          .request(server)
+          .patch(`/student/${res.body._id}/addBookLink`)
+          .send({ newBookLink: 'www.testbooklink.com' })
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(200);
+            expect(res2.body).to.be.an('object');
+            expect(res2.body.assignedBookLink).to.equal('www.testbooklink.com');
+            // end test
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to change student book link without providing new book link', done => {
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // test request
+    chai
+      .request(server)
+      .post('/student/')
+      .send(TEST_STUDENT)
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // check for keys
+        expect(res.body).to.have.property('_id');
+        expect(res.body).to.have.property('firstName');
+        expect(res.body).to.have.property('lastInitial');
+        expect(res.body).to.have.property('readingLevel');
+
+        // check for values
+        expect(res.body.firstName).to.equal(TEST_STUDENT.firstName);
+        expect(res.body.lastInitial).to.equal(TEST_STUDENT.lastInitial);
+        expect(res.body.readingLevel).to.equal(TEST_STUDENT.readingLevel);
+
+        chai
+          .request(server)
+          .patch(`/student/${res.body._id}/addBookLink`)
+          .send({})
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(400);
+            expect(res2.body.error).to.equal('no new book link provided');
+            // end test
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
 });
 
 describe('🧪 Test student letter upload', () => {
