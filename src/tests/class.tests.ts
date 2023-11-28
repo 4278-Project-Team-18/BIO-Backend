@@ -367,3 +367,76 @@ describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
       });
   });
 });
+
+describe('🧪 Test PATCH /class/:classId/updateEstimatedDelivery', () => {
+  it('should successfully update estimated delivery date', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .then(res1 => {
+        // check for response
+        expect(res1.status).to.equal(201);
+        expect(res1.body).to.be.an('object');
+
+        // make request to add delivery date
+        chai
+          .request(server)
+          .patch(`/class/${res1.body._id}/updateEstimatedDelivery`)
+          .send({
+            newEstimatedDelivery: '18-4-23',
+          })
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(200);
+            expect(res2.body).to.be.an('object');
+            expect(res2.body.class.estimatedDelivery).to.equal('18-4-23');
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  it('should fail to update estimated delivery date without providing new date', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .then(res1 => {
+        // check for response
+        expect(res1.status).to.equal(201);
+        expect(res1.body).to.be.an('object');
+
+        // make update delivery request and check that it fails
+        chai
+          .request(server)
+          .patch(`/class/${res1.body._id}/updateEstimatedDelivery`)
+          .send({})
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(400);
+            expect(res2.body).to.be.an('object');
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+});
