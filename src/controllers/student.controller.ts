@@ -197,3 +197,39 @@ export const uploadStudentLetter = async (req: any, res: Response) => {
     return res.status(500).json({ error: error.message });
   }
 };
+
+export const addBookLink = async (req: any, res: Response) => {
+  const { studentId } = req.params;
+
+  const { newBookLink } = req.body;
+
+  //check if studentId is present
+  if (!studentId) {
+    return res.status(400).json({ error: 'no student ID provided' });
+  }
+
+  if (!newBookLink) {
+    return res.status(400).json({ error: 'no new book link provided' });
+  }
+
+  //check if studentId is valid
+  if (!mongoose.Types.ObjectId.isValid(studentId)) {
+    return res.status(400).json({ error: 'Invalid student ID' });
+  }
+
+  try {
+    const studentObj = await Student.findById(studentId);
+
+    if (!studentObj) {
+      return res.status(400).json({ error: 'failed to find student object' });
+    }
+
+    studentObj.assignedBookLink = newBookLink;
+    await studentObj.save();
+
+    return res.status(200).json(studentObj);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
