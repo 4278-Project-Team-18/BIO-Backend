@@ -3,246 +3,322 @@ import Student from '../models/student.model';
 import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Invite from '../models/invite.model';
+import { Role } from '../interfaces/invite.interface';
+import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 
 export const createVolunteer = async (req: Request, res: Response) => {
-  // get Volunteer object from request body
-  const volunteerObj = req.body;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  // check if Volunteer object is provided
-  if (!volunteerObj || Object.keys(volunteerObj).length === 0) {
-    return res.status(400).json({ error: 'No volunteer object provided.' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  // check if Volunteer object has all required keys and no extraneous keys
-  const keyValidationString = verifyKeys(
-    volunteerObj,
-    KeyValidationType.VOLUNTEER
-  );
-  if (keyValidationString) {
-    return res.status(400).json({ error: keyValidationString });
-  }
+  if (role === Role.ADMIN) {
+    // get Volunteer object from request body
+    const volunteerObj = req.body;
 
-  try {
-    // create new Volunteer mongo object
-    const newVolunteer = new Volunteer(volunteerObj);
+    // check if Volunteer object is provided
+    if (!volunteerObj || Object.keys(volunteerObj).length === 0) {
+      return res.status(400).json({ error: 'No volunteer object provided.' });
+    }
 
-    // save new Volunteer to database
-    await newVolunteer.save();
+    // check if Volunteer object has all required keys and no extraneous keys
+    const keyValidationString = verifyKeys(
+      volunteerObj,
+      KeyValidationType.VOLUNTEER
+    );
+    if (keyValidationString) {
+      return res.status(400).json({ error: keyValidationString });
+    }
 
-    // return new Volunteer
-    return res.status(201).json(newVolunteer);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+    try {
+      // create new Volunteer mongo object
+      const newVolunteer = new Volunteer(volunteerObj);
+
+      // save new Volunteer to database
+      await newVolunteer.save();
+
+      // return new Volunteer
+      return res.status(201).json(newVolunteer);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
   }
 };
 
 export const getVolunteer = async (req: Request, res: Response) => {
-  const { volunteerId } = req.params;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  // check if volunteer id is provided
-  if (!volunteerId) {
-    return res.status(400).json({ error: 'No volunteer id provided.' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  try {
-    const volunteer =
-      await Volunteer.findById(volunteerId).populate('matchedStudents');
+  if (role === Role.ADMIN) {
+    const { volunteerId } = req.params;
 
-    if (!volunteer) {
-      return res.status(400).json({ error: 'Volunteer not found!' });
+    // check if volunteer id is provided
+    if (!volunteerId) {
+      return res.status(400).json({ error: 'No volunteer id provided.' });
     }
 
-    // return all volunteers
-    return res.status(200).json(volunteer);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+    try {
+      const volunteer =
+        await Volunteer.findById(volunteerId).populate('matchedStudents');
+
+      if (!volunteer) {
+        return res.status(400).json({ error: 'Volunteer not found!' });
+      }
+
+      // return all volunteers
+      return res.status(200).json(volunteer);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
   }
+
+  return res.status(400).json({ error: 'Invalid role.' });
 };
 
 export const getVolunteers = async (req: Request, res: Response) => {
-  try {
-    const volunteers = await Volunteer.find({}).populate('matchedStudents');
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-    // check if volunteers exist
-    if (!volunteers) {
-      return res.status(400).json({ error: 'Volunteers not found!' });
-    }
-
-    // return all volunteers
-    return res.status(200).json(volunteers);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
+
+  if (role === Role.ADMIN) {
+    try {
+      const volunteers = await Volunteer.find({}).populate('matchedStudents');
+
+      // check if volunteers exist
+      if (!volunteers) {
+        return res.status(400).json({ error: 'Volunteers not found!' });
+      }
+
+      // return all volunteers
+      return res.status(200).json(volunteers);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+
+  return res.status(400).json({ error: 'Invalid role.' });
 };
 
 export const changeVolunteerApproval = async (req: Request, res: Response) => {
-  const { volunteerId } = req.params;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  const { newApprovalStatus } = req.body;
-
-  if (!volunteerId) {
-    return res.status(400).json({ error: 'No volunteer id provided.' });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
-    return res.status(400).json({ error: 'Invalid volunteer ID.' });
-  }
+  if (role === Role.ADMIN) {
+    const { volunteerId } = req.params;
 
-  if (!Object.values(ApprovalStatus).includes(newApprovalStatus)) {
-    return res
-      .status(400)
-      .json({ error: 'Invalid new status string for volunteer' });
-  }
+    const { newApprovalStatus } = req.body;
 
-  try {
-    // get the volunteer object
-    const volunteerObj = await Volunteer.findById(volunteerId);
-
-    // return error if volunteer is null
-    if (!volunteerObj) {
-      return res.status(400).json({ error: 'cannot find volunteer object' });
+    if (!volunteerId) {
+      return res.status(400).json({ error: 'No volunteer id provided.' });
     }
 
-    // get the invite associated with that email
-    const invite = await Invite.findOne({ email: volunteerObj.email });
-
-    if (!invite) {
-      return res.status(400).json({ error: 'cannot find invite object' });
+    if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+      return res.status(400).json({ error: 'Invalid volunteer ID.' });
     }
 
-    // update the approval status of the volunteer and the invite
-    volunteerObj.approvalStatus = newApprovalStatus;
-    invite.status = newApprovalStatus;
+    if (!Object.values(ApprovalStatus).includes(newApprovalStatus)) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid new status string for volunteer' });
+    }
 
-    // save the updated objects
-    await volunteerObj.save();
-    await invite.save();
+    try {
+      // get the volunteer object
+      const volunteerObj = await Volunteer.findById(volunteerId);
 
-    return res.status(200).json(volunteerObj);
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+      // return error if volunteer is null
+      if (!volunteerObj) {
+        return res.status(400).json({ error: 'cannot find volunteer object' });
+      }
+
+      // get the invite associated with that email
+      const invite = await Invite.findOne({ email: volunteerObj.email });
+
+      if (!invite) {
+        return res.status(400).json({ error: 'cannot find invite object' });
+      }
+
+      // update the approval status of the volunteer and the invite
+      volunteerObj.approvalStatus = newApprovalStatus;
+      invite.status = newApprovalStatus;
+
+      // save the updated objects
+      await volunteerObj.save();
+      await invite.save();
+
+      return res.status(200).json(volunteerObj);
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
+    }
   }
 };
 
 //match volunteer and student
 export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
-  const { volunteerId, studentIdArray } = req.body;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  const keyValidationString = verifyKeys(req.body, KeyValidationType.MATCH);
-  //input validation
-  if (keyValidationString) {
-    return res.status(400).json({ error: keyValidationString });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
-    return res.status(400).json({ error: 'Invalid volunteer ID' });
-  }
+  if (role === Role.ADMIN) {
+    const { volunteerId, studentIdArray } = req.body;
 
-  try {
-    //get volunteer object
-    const volunteerObj = await Volunteer.findById(volunteerId);
+    const keyValidationString = verifyKeys(req.body, KeyValidationType.MATCH);
+    //input validation
+    if (keyValidationString) {
+      return res.status(400).json({ error: keyValidationString });
+    }
 
-    //get all student objects
-    let studentPromises = [] as Promise<any>[];
-    for (let i = 0; i < studentIdArray.length; ++i) {
-      const currentStudentId = studentIdArray[i];
-      if (!mongoose.Types.ObjectId.isValid(currentStudentId)) {
-        return res.status(400).json({ error: 'Invalid student ID.' });
+    if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+      return res.status(400).json({ error: 'Invalid volunteer ID' });
+    }
+
+    try {
+      //get volunteer object
+      const volunteerObj = await Volunteer.findById(volunteerId);
+
+      //get all student objects
+      let studentPromises = [] as Promise<any>[];
+      for (let i = 0; i < studentIdArray.length; ++i) {
+        const currentStudentId = studentIdArray[i];
+        if (!mongoose.Types.ObjectId.isValid(currentStudentId)) {
+          return res.status(400).json({ error: 'Invalid student ID.' });
+        }
+        const currentStudent = Student.findById(currentStudentId);
+        studentPromises.push(currentStudent);
       }
-      const currentStudent = Student.findById(currentStudentId);
-      studentPromises.push(currentStudent);
-    }
 
-    const studentObjArr = await Promise.all(studentPromises);
+      const studentObjArr = await Promise.all(studentPromises);
 
-    //add student IDs to volunteer
-    if (!volunteerObj) {
-      return res.status(400).json({ error: 'cannot find volunteer object' });
-    }
-    volunteerObj.matchedStudents.push(...studentIdArray);
-
-    //add volunteerID to students
-    studentPromises = [];
-    for (let i = 0; i < studentObjArr.length; ++i) {
-      const currentStudent = studentObjArr[i];
-      if (!currentStudent) {
-        return res.status(400).json({ error: 'cannot find student object' });
-      } else {
-        currentStudent.matchedVolunteer = volunteerId;
-        studentPromises.push(currentStudent.save());
+      //add student IDs to volunteer
+      if (!volunteerObj) {
+        return res.status(400).json({ error: 'cannot find volunteer object' });
       }
+      volunteerObj.matchedStudents.push(...studentIdArray);
+
+      //add volunteerID to students
+      studentPromises = [];
+      for (let i = 0; i < studentObjArr.length; ++i) {
+        const currentStudent = studentObjArr[i];
+        if (!currentStudent) {
+          return res.status(400).json({ error: 'cannot find student object' });
+        } else {
+          currentStudent.matchedVolunteer = volunteerId;
+          studentPromises.push(currentStudent.save());
+        }
+      }
+
+      //await all save operations
+      await volunteerObj.save();
+      await Promise.all(studentPromises);
+
+      return res
+        .status(200)
+        .json({ volunteer: volunteerObj, students: studentObjArr });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
     }
-
-    //await all save operations
-    await volunteerObj.save();
-    await Promise.all(studentPromises);
-
-    return res
-      .status(200)
-      .json({ volunteer: volunteerObj, students: studentObjArr });
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message });
   }
+
+  return res.status(400).json({ error: 'Invalid role.' });
 };
 
 //unmatch volunteer and student
 export const unmatchVolunteerAndStudent = async (req: Request, res: Response) => {
-  const { volunteerId, studentId } = req.body;
+  // get role from request
+  const { role } = getUserFromRequest(req);
 
-  const keyValidationString = verifyKeys(req.body, KeyValidationType.UNMATCH);
-  //input validation
-  if (keyValidationString) {
-    return res.status(400).json({ error: keyValidationString });
+  if (role === Role.VOLUNTEER || role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
-    return res.status(400).json({ error: 'Invalid volunteer ID' });
-  }
+  if (role === Role.ADMIN) {
+    const { volunteerId, studentId } = req.body;
 
-  if (!mongoose.Types.ObjectId.isValid(studentId)) {
-    return res.status(400).json({ error: 'Invalid student ID' });
-  }
-
-  try {
-    //get volunteer object
-    const volunteerObj = await Volunteer.findById(volunteerId);
-    const studentObj = await Student.findById(studentId);
-
-    if (!volunteerObj) {
-      return res.status(400).json({ error: 'failed to find volunteer object' });
+    const keyValidationString = verifyKeys(req.body, KeyValidationType.UNMATCH);
+    //input validation
+    if (keyValidationString) {
+      return res.status(400).json({ error: keyValidationString });
     }
 
-    if (!studentObj) {
-      return res.status(400).json({ error: 'failed to find student object' });
+    if (!mongoose.Types.ObjectId.isValid(volunteerId)) {
+      return res.status(400).json({ error: 'Invalid volunteer ID' });
     }
 
-    //return error if the two Ids submitted are not currently matched
-    if (
-      !volunteerObj.matchedStudents.includes(studentId) &&
-      studentObj.matchedVolunteer != volunteerId
-    ) {
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({ error: 'Invalid student ID' });
+    }
+
+    try {
+      //get volunteer object
+      const volunteerObj = await Volunteer.findById(volunteerId);
+      const studentObj = await Student.findById(studentId);
+
+      if (!volunteerObj) {
+        return res.status(400).json({ error: 'failed to find volunteer object' });
+      }
+
+      if (!studentObj) {
+        return res.status(400).json({ error: 'failed to find student object' });
+      }
+
+      //return error if the two Ids submitted are not currently matched
+      if (
+        !volunteerObj.matchedStudents.includes(studentId) &&
+        studentObj.matchedVolunteer != volunteerId
+      ) {
+        return res
+          .status(400)
+          .json({ error: 'volunteer not currently matched to student' });
+      }
+
+      //update match fields to ummatch the two objects
+      volunteerObj.matchedStudents = volunteerObj.matchedStudents.filter(
+        id => id != studentId
+      );
+      studentObj.matchedVolunteer = undefined;
+
+      //save
+      await volunteerObj.save();
+      await studentObj.save();
+
       return res
-        .status(400)
-        .json({ error: 'volunteer not currently matched to student' });
+        .status(200)
+        .json({ volunteer: volunteerObj, student: studentObj });
+    } catch (error: any) {
+      return res.status(500).json({ error: error.message });
     }
-
-    //update match fields to ummatch the two objects
-    volunteerObj.matchedStudents = volunteerObj.matchedStudents.filter(
-      id => id != studentId
-    );
-    studentObj.matchedVolunteer = undefined;
-
-    //save
-    await volunteerObj.save();
-    await studentObj.save();
-
-    return res.status(200).json({ volunteer: volunteerObj, student: studentObj });
-  } catch (error: any) {
-    return res.status(500).json({ error: error.message });
   }
 };
