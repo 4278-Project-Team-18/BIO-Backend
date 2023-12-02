@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "start": "nodemon src/index.ts",
-    "test": "ENVIRONMENT=test nyc mocha -r dotenv/config --timeout 20000 --exit -r ts-node/register src/tests/*.tests.ts",
+    "test": "nyc mocha -r dotenv/config --timeout 20000 --exit -r ts-node/register src/tests/*.tests.ts",
     "seed": "ENVIRONMENT=test nyc mocha -r dotenv/config --timeout 20000 --exit -r ts-node/register src/scripts/seed.script.ts",
     "seed:soft": "ENVIRONMENT=test nyc mocha -r dotenv/config --timeout 20000 --exit -r ts-node/register src/scripts/soft-seed.script.ts",
     "typescript:check": "tsc --esModuleInterop",
