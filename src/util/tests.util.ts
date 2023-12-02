@@ -19,7 +19,6 @@ export const getUserFromRequest = (req: RequireAuthProp<Request>) => {
   // for testing purposes
   if (process.env.ENVIRONMENT === 'test') {
     const role = req.headers.role as string;
-    console.log('THIS IS A TEST: ', role);
     const email = 'test@test.com';
 
     return { role, email };

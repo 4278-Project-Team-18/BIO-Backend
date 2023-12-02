@@ -2,12 +2,7 @@ import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
 import { createTestClass, createTestStudent } from '../tests/testData/testData';
 import Teacher from '../models/teacher.model';
-import Student from '../models/student.model';
 import Class from '../models/class.model';
-import Volunteer from '../models/volunteer.model';
-import Admin from '../models/admin.model';
-import Invite from '../models/invite.model';
-
 import mongoose from 'mongoose';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
@@ -39,15 +34,18 @@ chai.should();
 const app = createServer();
 let server: Server;
 
+let teacherIds: string[] = [];
+
 // before tests: connect to mongodb and open mock server
 before(async () => {
   await connectTestsToMongo();
-  await Teacher.deleteMany({});
-  await Student.deleteMany({});
-  await Class.deleteMany({});
-  await Volunteer.deleteMany({});
-  await Admin.deleteMany({});
-  await Invite.deleteMany({});
+  // delete the classes with no students
+  await Class.deleteMany({ students: [] });
+  // get the teachers
+  const teachers = await Teacher.find({});
+  // get the teacher ids
+  teacherIds = teachers.map(teacher => teacher._id.toString());
+  console.log(teacherIds);
   server = app.listen(6006);
 });
 
@@ -66,24 +64,20 @@ after(async () => {
 
 const classIds: string[] = [];
 
-describe('🌱 [SEED] Create classes for most teachers', async () => {
-  // get the teachers
-  const teachers = await Teacher.find({});
-
-  // get the teacher ids
-  const teacherIds = teachers.map(teacher => teacher._id);
-
-  for (let i = 0; i < NUM_TEST_CLASSES; i++) {
+describe('🌱 [SEED] Create classes for most teachers', () => {
+  for (let i = 0; i < teacherIds.length; i++) {
     it(`should successfully seed class ${i + 1} into database`, done => {
       chai
         .request(server)
         .post('/class/')
+        .set('role', 'teacher')
         .send({
           ...createTestClass(),
           teacherId: teacherIds[i],
         })
         .then(res => {
           try {
+            console.log(res.body);
             res.should.have.status(201);
             classIds.push(res.body._id);
             done();
@@ -96,7 +90,9 @@ describe('🌱 [SEED] Create classes for most teachers', async () => {
   }
 });
 
-describe('🌱 [SEED] Create students for all classes', async () => {
+console.log(classIds);
+
+describe('🌱 [SEED] Create students for all classes', () => {
   for (let i = 0; i < NUM_TEST_CLASSES; i++) {
     for (let j = 0; j < NUM_TEST_STUDENTS_PER_CLASS; j++) {
       it(`should successfully seed student ${
@@ -105,6 +101,7 @@ describe('🌱 [SEED] Create students for all classes', async () => {
         chai
           .request(server)
           .post(`/class/${classIds[i]}/addStudent`)
+          .set('role', 'teacher')
           .send({ ...createTestStudent(), classId: classIds[i] })
           .then(res => {
             try {
