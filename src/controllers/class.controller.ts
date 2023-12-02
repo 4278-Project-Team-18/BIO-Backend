@@ -4,6 +4,7 @@ import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Teacher from '../models/teacher.model';
 import { getUserFromRequest } from '../util/tests.util';
 import { Role } from '../interfaces/invite.interface';
+import Volunteer from '../models/volunteer.model';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
@@ -251,6 +252,66 @@ export const removeStudentFromClass = async (req: Request, res: Response) => {
       return res.status(500).json({ error: error.message });
     }
   }
+};
 
+export const removeClassAndStudents = async (req: Request, res: Response) => {
+  // get role from request
+  const { role } = getUserFromRequest(req);
+
+  if (role === Role.VOLUNTEER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
+  }
+
+  if (role === Role.ADMIN || role === Role.TEACHER) {
+    // get class id from request body
+    const { classId } = req.params;
+
+    if (!classId) {
+      return res.status(400).json({ error: 'No class id provided.' });
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(classId)) {
+      return res.status(400).json({ error: 'Invalid classId.' });
+    }
+
+    try {
+      // find class by id
+      const classObj = await Class.findById(classId);
+
+      // if class is null return 400
+      if (!classObj) {
+        return res.status(400).json({ error: 'Cannot find class object.' });
+      }
+
+      // remove the students from the database
+      await Student.deleteMany({ _id: { $in: classObj.students } });
+
+      // remove the class from the teacher
+      const teacher = await Teacher.findById(classObj.teacherId);
+      if (teacher) {
+        teacher.classes = teacher.classes.filter(
+          (classId: any) => classId.toString() !== classObj._id.toString()
+        );
+        await teacher.save();
+      }
+
+      // remove the students from the volunteers
+      await Volunteer.updateMany(
+        { matchedStudents: { $in: classObj.students } },
+        { $pullAll: { matchedStudents: classObj.students } }
+      );
+
+      // remove the class from the database
+      await classObj.deleteOne();
+
+      // return new class
+      return res.status(200).json(classObj);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
   return res.status(400).json({ error: 'Invalid role.' });
 };

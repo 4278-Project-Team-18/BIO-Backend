@@ -4,8 +4,7 @@ import Teacher from '../models/teacher.model';
 import Admin from '../models/admin.model';
 import Invite from '../models/invite.model';
 import { ApprovalStatus } from '../util/constants';
-import { InviteStatus, Role } from '../interfaces/invite.interface';
-import { getUserFromRequest } from '../util/tests.util';
+import { InviteStatus } from '../interfaces/invite.interface';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
@@ -127,15 +126,6 @@ export const createAccount = async (req: Request, res: Response) => {
 };
 
 export const getAccount = async (req: Request, res: Response) => {
-  // get role from request
-  const { role } = getUserFromRequest(req);
-
-  if (role !== Role.VOLUNTEER || role !== Role.TEACHER || role !== Role.ADMIN) {
-    return res.status(403).send({
-      message: 'You are not authorized to access this endpoint.',
-    });
-  }
-
   const { accountEmail } = req.query;
 
   // check if account id is provided
