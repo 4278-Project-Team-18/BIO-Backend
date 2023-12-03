@@ -42,6 +42,7 @@ describe('🧪 Test POST /admin/', () => {
     chai
       .request(server)
       .post('/admin/')
+      .set('role', 'admin')
       .send(TEST_ADMIN)
       .then(res => {
         // check for response
@@ -73,6 +74,7 @@ describe('🧪 Test POST /admin/', () => {
     chai
       .request(server)
       .post('/admin/')
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
@@ -98,6 +100,7 @@ describe('🧪 Test POST /admin/', () => {
     chai
       .request(server)
       .post('/admin/')
+      .set('role', 'admin')
       .send({
         email: TEST_ADMIN.email,
         lastName: TEST_ADMIN.lastName,

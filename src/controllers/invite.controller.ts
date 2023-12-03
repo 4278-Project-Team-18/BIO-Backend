@@ -7,7 +7,6 @@ import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
-import type { Admin as AdminInterface } from '../interfaces/admin.interface';
 dotenv.config();
 
 export const getInvite = async (req: Request, res: Response) => {
@@ -79,10 +78,10 @@ export const sendInvite = async (req: Request, res: Response) => {
       });
 
       // get sender, uncomment when we do auth
-      const sender = (await Admin.findById(senderId)) as AdminInterface;
+      const sender = await Admin.findById(senderId);
 
       if (process.env.ENVIRONMENT === 'production') {
-        sendInviteEmail(role, email, sender);
+        await sendInviteEmail(role, email, sender?._id.toString() || '');
       }
 
       // save new invite to database

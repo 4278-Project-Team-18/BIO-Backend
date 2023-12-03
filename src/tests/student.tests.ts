@@ -44,6 +44,7 @@ describe('🧪 Test POST /student/', () => {
       .request(server)
       .post('/student/')
       .send(TEST_STUDENT)
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(201);
@@ -72,6 +73,7 @@ describe('🧪 Test POST /student/', () => {
     chai
       .request(server)
       .post('/student/')
+      .set('role', 'admin')
       .send()
       .then(res => {
         // check for response
@@ -100,6 +102,7 @@ describe('🧪 Test POST /student/', () => {
     chai
       .request(server)
       .post('/student/')
+      .set('role', 'admin')
       .send(TEST_STUDENT)
       .then(res => {
         // check for response
@@ -123,6 +126,7 @@ describe('🧪 Test POST /student/', () => {
     chai
       .request(server)
       .get('/student/')
+      .set('role', 'admin')
       .send()
       .then(res => {
         // check for response
@@ -146,6 +150,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
     chai
       .request(server)
       .post('/student/')
+      .set('role', 'admin')
       .send(TEST_STUDENT)
       .then(res => {
         // check for response
@@ -170,6 +175,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
         chai
           .request(server)
           .patch(`/student/${res.body._id}`)
+          .set('role', 'admin')
           .send(TEST_STUDENT)
           .then(nextRes => {
             // check for response
@@ -206,6 +212,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
     chai
       .request(server)
       .patch('/student/BAD')
+      .set('role', 'admin')
       .send(TEST_STUDENT)
       .then(res => {
         // check for response
@@ -232,6 +239,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
     chai
       .request(server)
       .post('/student/')
+      .set('role', 'admin')
       .send(TEST_STUDENT)
       .then(res => {
         // check for response
@@ -252,6 +260,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
         chai
           .request(server)
           .patch(`/student/${res.body._id}/addBookLink`)
+          .set('role', 'admin')
           .send({ newBookLink: 'www.testbooklink.com' })
           .then(res2 => {
             // check for response
@@ -278,6 +287,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
     chai
       .request(server)
       .post('/student/')
+      .set('role', 'admin')
       .send(TEST_STUDENT)
       .then(res => {
         // check for response
@@ -298,6 +308,7 @@ describe('🧪 Test PATCH /student/:studentId ', () => {
         chai
           .request(server)
           .patch(`/student/${res.body._id}/addBookLink`)
+          .set('role', 'admin')
           .send({})
           .then(res2 => {
             // check for response
@@ -327,6 +338,7 @@ describe('🧪 Test student letter upload', () => {
     chai
       .request(server)
       .post('/student/')
+      .set('role', 'admin')
       .send(TEST_STUDENT)
       .then(studentRes => {
         // check for response
@@ -335,6 +347,7 @@ describe('🧪 Test student letter upload', () => {
         chai
           .request(server)
           .post(`/student/${studentRes.body._id}/uploadStudentLetter`)
+          .set('role', 'admin')
           .attach('file', __dirname + '/chai-test.pdf', 'chai-test.pdf')
           .then(res => {
             // check for response
@@ -367,6 +380,7 @@ describe('🧪 Test student letter upload', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .send(TEST_VOLUNTEER)
       .then(volunteerRes => {
         // check for response
@@ -377,6 +391,7 @@ describe('🧪 Test student letter upload', () => {
         chai
           .request(server)
           .post('/student/')
+          .set('role', 'admin')
           .send(TEST_STUDENT)
           .then(studentRes => {
             // check for response
@@ -387,6 +402,7 @@ describe('🧪 Test student letter upload', () => {
             chai
               .request(server)
               .patch('/volunteer/match')
+              .set('role', 'admin')
               .send({
                 volunteerId: volunteerRes.body._id,
                 studentIdArray: [studentRes.body._id],
@@ -413,6 +429,7 @@ describe('🧪 Test student letter upload', () => {
                 chai
                   .request(server)
                   .post(`/student/${studentRes.body._id}/uploadVolunteerLetter`)
+                  .set('role', 'admin')
                   .field('volunteerId', volunteerRes.body._id)
                   .attach('file', __dirname + '/chai-test.pdf', 'chai-test.pdf')
                   .then(res => {
