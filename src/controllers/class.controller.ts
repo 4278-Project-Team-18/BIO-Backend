@@ -288,10 +288,7 @@ export const updateEstimatedDelivery = async (req: Request, res: Response) => {
     await classObj.save();
 
     // return new class
-    return res.status(200).json({
-      message: 'Successfully updated estimated delivery.',
-      class: classObj,
-    });
+    return res.status(200).json(classObj);
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
