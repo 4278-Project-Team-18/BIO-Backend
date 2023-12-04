@@ -44,6 +44,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .send(TEST_VOLUNTEER)
       .then(res => {
         // check for response
@@ -76,6 +77,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
@@ -102,6 +104,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .send(TEST_VOLUNTEER)
       .then(res => {
         // check for response
@@ -203,6 +206,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .patch(`/volunteer/12345678/changeVolunteerApprovalStatus`)
+      .set('role', 'admin')
       .send({ newApprovalStatus: 'rejected' })
       .then(res => {
         // check for response
@@ -229,6 +233,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .send(TEST_VOLUNTEER)
       .then(volunteerRes => {
         // check for response
@@ -239,6 +244,7 @@ describe('🧪 Test POST /volunteer/', () => {
         chai
           .request(server)
           .post('/student/')
+          .set('role', 'admin')
           .send(TEST_STUDENT)
           .then(studentRes => {
             // check for response
@@ -249,6 +255,7 @@ describe('🧪 Test POST /volunteer/', () => {
             chai
               .request(server)
               .post('/student/')
+              .set('role', 'admin')
               .send(TEST_STUDENT2)
               .then(studentRes2 => {
                 // check for response
@@ -259,6 +266,7 @@ describe('🧪 Test POST /volunteer/', () => {
                 chai
                   .request(server)
                   .patch(`/volunteer/match`)
+                  .set('role', 'admin')
                   .send({
                     volunteerId: volunteerRes.body._id,
                     studentIdArray: [studentRes.body._id, studentRes2.body._id],
@@ -304,6 +312,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .patch(`/volunteer/match`)
+      .set('role', 'admin')
       .send({ volunteerId: '12345678', studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
@@ -324,6 +333,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .patch(`/volunteer/match`)
+      .set('role', 'admin')
       .send({ studentIdArray: ['12345678'] })
       .then(res => {
         // check for response
@@ -347,6 +357,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .send(TEST_VOLUNTEER)
       .then(volunteerRes => {
         // check for response
@@ -357,6 +368,7 @@ describe('🧪 Test POST /volunteer/', () => {
         chai
           .request(server)
           .post('/student/')
+          .set('role', 'admin')
           .send(TEST_STUDENT)
           .then(studentRes => {
             // check for response
@@ -367,6 +379,7 @@ describe('🧪 Test POST /volunteer/', () => {
             chai
               .request(server)
               .patch('/volunteer/match')
+              .set('role', 'admin')
               .send({
                 volunteerId: volunteerRes.body._id,
                 studentIdArray: [studentRes.body._id],
@@ -393,6 +406,7 @@ describe('🧪 Test POST /volunteer/', () => {
                 chai
                   .request(server)
                   .patch(`/volunteer/unmatch`)
+                  .set('role', 'admin')
                   .send({
                     volunteerId: volunteerRes.body._id,
                     studentId: studentRes.body._id,
@@ -437,6 +451,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .post('/volunteer/')
+      .set('role', 'admin')
       .send(TEST_VOLUNTEER)
       .then(volunteerRes => {
         // check for response
@@ -448,6 +463,7 @@ describe('🧪 Test POST /volunteer/', () => {
           .request(server)
           .post('/student/')
           .send(TEST_STUDENT)
+          .set('role', 'admin')
           .then(studentRes => {
             // check for response
             expect(studentRes.status).to.equal(201);
@@ -457,6 +473,7 @@ describe('🧪 Test POST /volunteer/', () => {
             chai
               .request(server)
               .patch('/volunteer/unmatch')
+              .set('role', 'admin')
               .send({
                 volunteerId: volunteerRes.body._id,
                 studentId: studentRes.body._id,
@@ -490,6 +507,7 @@ describe('🧪 Test POST /volunteer/', () => {
     chai
       .request(server)
       .patch(`/volunteer/unmatch`)
+      .set('role', 'admin')
       .send({ studentId: '12345678' })
       .then(res => {
         // check for response

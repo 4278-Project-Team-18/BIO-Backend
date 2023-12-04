@@ -2,6 +2,7 @@ import {
   addStudentToClass,
   createClass,
   getClasses,
+  removeClassAndStudents,
   removeStudentFromClass,
   updateEstimatedDelivery,
 } from '../controllers/class.controller';
@@ -13,6 +14,7 @@ const classRouter = express.Router();
 classRouter.post('/', createClass);
 classRouter.get('/', getClasses);
 classRouter.post('/:classId/addStudent', addStudentToClass);
+classRouter.delete('/:classId', removeClassAndStudents);
 classRouter.delete('/:classId/removeStudent', removeStudentFromClass);
 classRouter.patch('/:classId/updateEstimatedDelivery', updateEstimatedDelivery);
 export = classRouter;

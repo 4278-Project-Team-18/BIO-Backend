@@ -45,6 +45,7 @@ describe('🧪 Test POST /teacher/', () => {
       .request(server)
       .post('/teacher/')
       .send(TEST_TEACHER)
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(201);
@@ -76,6 +77,7 @@ describe('🧪 Test POST /teacher/', () => {
     chai
       .request(server)
       .post('/teacher/')
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(400);
@@ -102,6 +104,7 @@ describe('🧪 Test POST /teacher/', () => {
     chai
       .request(server)
       .post('/teacher/')
+      .set('role', 'admin')
       .send(TEST_TEACHER)
       .then(res => {
         // check for response
@@ -202,6 +205,7 @@ describe('🧪 Test POST /teacher/', () => {
     chai
       .request(server)
       .patch('/teacher/invalidId/changeTeacherApprovalStatus')
+      .set('role', 'admin')
       .send({ newApprovalStatus: 'approved' })
       .then(res => {
         // check for response

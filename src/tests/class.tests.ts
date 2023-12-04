@@ -37,7 +37,8 @@ after(async () => {
 });
 
 describe('🧪 Test POST /class/', () => {
-  it('should successfully create class', done => {
+  //[ADMIN ROLE SUCCESS] testing normal create class functionality with admin role
+  it('should successfully create class using admin role', done => {
     // create random test class
     const TEST_CLASS = createTestClass();
 
@@ -46,6 +47,7 @@ describe('🧪 Test POST /class/', () => {
       .request(server)
       .post('/class/')
       .send(TEST_CLASS)
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(201);
@@ -65,6 +67,59 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
+  //[TEACHER ROLE SUCCESS] testing normal create class functionality with teacher role
+  it('should successfully create class using teacher role', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // test request
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .set('role', 'teacher')
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // check for keys
+        expect(res.body).to.have.property('_id');
+        expect(res.body).to.have.property('name');
+
+        // check for values
+        expect(res.body.name).to.equal(TEST_CLASS.name);
+
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[VOLUNTEER ROLE FAILURE] testing failing case of create class when using volunteer role
+  it('should forbid class creation with volunteer role', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // test request
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .set('role', 'volunteer')
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(403);
+        expect(res.body).to.be.an('object');
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[REQUEST FORMAT FAILURE]
   it('should fail to create class with missing name', done => {
     // create random test class
     const TEST_CLASS = createTestClass() as Partial<Class>;
@@ -74,6 +129,7 @@ describe('🧪 Test POST /class/', () => {
     chai
       .request(server)
       .post('/class/')
+      .set('role', 'admin')
       .send(TEST_CLASS)
       .then(res => {
         // check for response
@@ -91,11 +147,13 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
+  //[REQUEST FORMAT FAILURE]
   it('should fail to create class when no class provided', done => {
     // test request
     chai
       .request(server)
       .post('/class/')
+      .set('role', 'admin')
       .send()
       .then(res => {
         // check for response
@@ -113,11 +171,14 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
-  it('should get all classes', done => {
+  //[ADMIN ROLE SUCCESS]successful get all classes using admin role
+  it('should get all classes using admin role', done => {
     // test request
     chai
       .request(server)
       .get('/class/')
+      .set('role', 'admin')
+      .set('email', '')
       .then(res => {
         // check for response
         expect(res.status).to.equal(200);
@@ -129,6 +190,50 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
+  //[TEACHER ROLE SUCCESS] successful get class using teacher role
+  // it('should get all classes using teacher role', done => {
+  //   // test request
+  //   chai
+  //     .request(server)
+  //     .get('/class/')
+  //     .set('role', 'teacher')
+  //     .set('email', 'admn.cwrubio@gmail.com')
+  //     .then(res => {
+  //       // check for response
+  //       expect(res.status).to.equal(200);
+  //       expect(res.body).to.be.an('array');
+
+  //       /******
+  //        *
+  //       have to write additional logic here to check that only classes belonging to this teacher are returned
+
+  //       */
+  //       done();
+  //     })
+  //     .catch(err => {
+  //       done(err);
+  //     });
+  // });
+
+  //[VOLUNTEER ROLE FAILURE] fail to get all classes using volunteer role
+  it('should get all classes using volunteer role', done => {
+    // test request
+    chai
+      .request(server)
+      .get('/class/')
+      .set('role', 'volunteer')
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(403);
+        expect(res.body).to.be.an('object');
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[ADMIN ROLE SUCCESS] successfully add student to class as an admin
   it('should add a student to a class', done => {
     // create random test class
     const TEST_CLASS = createTestClass();
@@ -141,6 +246,7 @@ describe('🧪 Test POST /class/', () => {
       .request(server)
       .post('/class/')
       .send(TEST_CLASS)
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(201);
@@ -151,6 +257,7 @@ describe('🧪 Test POST /class/', () => {
           .request(server)
           .post(`/class/${res.body._id}/addStudent`)
           .send(TEST_STUDENT)
+          .set('role', 'admin')
           .then(res => {
             // check for response
             expect(res.status).to.equal(201);
@@ -178,6 +285,99 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
+  //[TEACHER ROLE SUCCESS] successfully add student to class as teacher
+  it('should add a student to a class', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .set('role', 'admin')
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // add student to class
+        chai
+          .request(server)
+          .post(`/class/${res.body._id}/addStudent`)
+          .send(TEST_STUDENT)
+          .set('role', 'teacher')
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(201);
+            expect(res.body).to.be.an('object');
+
+            // check for keys
+            expect(res.body).to.have.property('_id');
+            expect(res.body).to.have.property('firstName');
+            expect(res.body).to.have.property('lastInitial');
+            expect(res.body).to.have.property('readingLevel');
+
+            // check for values
+            expect(res.body.firstName).to.equal(TEST_STUDENT.firstName);
+            expect(res.body.lastInitial).to.equal(TEST_STUDENT.lastInitial);
+            expect(res.body.readingLevel).to.equal(TEST_STUDENT.readingLevel);
+
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[VOLUNTEER ROLE FAILURE] fail to add student to class as a volunteer
+  it('should add a student to a class', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .set('role', 'admin') //has to set role as admin for creating the class
+      .then(res => {
+        // check for response
+        expect(res.status).to.equal(201);
+        expect(res.body).to.be.an('object');
+
+        // add student to class
+        chai
+          .request(server)
+          .post(`/class/${res.body._id}/addStudent`)
+          .send(TEST_STUDENT)
+          .set('role', 'volunteer')
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(403);
+            expect(res.body).to.be.an('object');
+            done();
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[REQUEST FORMAT FAILURE]
   it('should fail to add a student to a class when no student provided', done => {
     // create random test class
     const TEST_CLASS = createTestClass();
@@ -186,6 +386,7 @@ describe('🧪 Test POST /class/', () => {
     chai
       .request(server)
       .post('/class/')
+      .set('role', 'admin')
       .send(TEST_CLASS)
       .then(res => {
         // check for response
@@ -196,6 +397,7 @@ describe('🧪 Test POST /class/', () => {
         chai
           .request(server)
           .post(`/class/${res.body._id}/addStudent`)
+          .set('role', 'admin')
           .send()
           .then(res => {
             // check for response
@@ -217,6 +419,7 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
+  //[REQUEST FORMAT FAILURE]
   it('should fail to add a student to a class when poorly formatted classId provided', done => {
     // create random test student
     const TEST_STUDENT = createTestStudent();
@@ -225,6 +428,7 @@ describe('🧪 Test POST /class/', () => {
     chai
       .request(server)
       .post(`/class/1234567890/addStudent`)
+      .set('role', 'teacher')
       .send(TEST_STUDENT)
       .then(res => {
         // check for response
@@ -242,6 +446,7 @@ describe('🧪 Test POST /class/', () => {
       });
   });
 
+  //[REQUEST FORMAT FAILURE]
   it('should fail to add student if keys are missing', done => {
     // create random test class
     const TEST_CLASS = createTestClass();
@@ -255,6 +460,7 @@ describe('🧪 Test POST /class/', () => {
       .request(server)
       .post('/class/')
       .send(TEST_CLASS)
+      .set('role', 'admin')
       .then(res => {
         // check for response
         expect(res.status).to.equal(201);
@@ -264,6 +470,7 @@ describe('🧪 Test POST /class/', () => {
         chai
           .request(server)
           .post(`/class/${res.body._id}/addStudent`)
+          .set('role', 'admin')
           .send(TEST_STUDENT)
           .then(res => {
             // check for response
@@ -287,6 +494,7 @@ describe('🧪 Test POST /class/', () => {
 });
 
 describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
+  //[ADMIN ROLE SUCCESS] admin success remove student from class
   it('should successfully remove student from class', done => {
     // create random test class
     const TEST_CLASS = createTestClass();
@@ -299,6 +507,7 @@ describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
       .request(server)
       .post('/class/')
       .send(TEST_CLASS)
+      .set('role', 'admin')
       .then(res1 => {
         // check for response
         expect(res1.status).to.equal(201);
@@ -309,6 +518,7 @@ describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
           .request(server)
           .post(`/class/${res1.body._id}/addStudent`)
           .send(TEST_STUDENT)
+          .set('role', 'admin')
           .then(res2 => {
             // check for response
             expect(res2.status).to.equal(201);
@@ -319,6 +529,7 @@ describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
               .request(server)
               .delete(`/class/${res1.body._id}/removeStudent/`)
               .send({ studentId: res2.body._id })
+              .set('role', 'admin')
               .then(res3 => {
                 // check for response
                 expect(res3.status).to.equal(200);
@@ -345,11 +556,130 @@ describe('🧪 Test DELETE /class/:classId/removeStudent/:studentId', () => {
       });
   });
 
+  //[TEACHER ROLE SUCCESS] teacher successfully remove student from class
+  it('should successfully remove student from class', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .set('role', 'teacher')
+      .then(res1 => {
+        // check for response
+        expect(res1.status).to.equal(201);
+        expect(res1.body).to.be.an('object');
+
+        // add student to class
+        chai
+          .request(server)
+          .post(`/class/${res1.body._id}/addStudent`)
+          .send(TEST_STUDENT)
+          .set('role', 'teacher')
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(201);
+            expect(res2.body).to.be.an('object');
+
+            // remove student from class
+            chai
+              .request(server)
+              .delete(`/class/${res1.body._id}/removeStudent/`)
+              .send({ studentId: res2.body._id })
+              .set('role', 'teacher')
+              .then(res3 => {
+                // check for response
+                expect(res3.status).to.equal(200);
+                expect(res3.body).to.be.an('object');
+
+                // check for keys
+                expect(res3.body).to.have.property('message');
+                expect(res3.body.message).to.equal(
+                  'Successfully removed student.'
+                );
+
+                done();
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[VOLUNTEER ROLE FAILURE] volunteer fail to remove student from class
+  it('should successfully remove student from class', done => {
+    // create random test class
+    const TEST_CLASS = createTestClass();
+
+    // create random test student
+    const TEST_STUDENT = createTestStudent();
+
+    // create class
+    chai
+      .request(server)
+      .post('/class/')
+      .send(TEST_CLASS)
+      .set('role', 'admin')
+      .then(res1 => {
+        // check for response
+        expect(res1.status).to.equal(201);
+        expect(res1.body).to.be.an('object');
+
+        // add student to class
+        chai
+          .request(server)
+          .post(`/class/${res1.body._id}/addStudent`)
+          .send(TEST_STUDENT)
+          .set('role', 'admin')
+          .then(res2 => {
+            // check for response
+            expect(res2.status).to.equal(201);
+            expect(res2.body).to.be.an('object');
+
+            // remove student from class
+            chai
+              .request(server)
+              .delete(`/class/${res1.body._id}/removeStudent/`)
+              .send({ studentId: res2.body._id })
+              .set('role', 'volunteer')
+              .then(res3 => {
+                // check for response
+                expect(res3.status).to.equal(403);
+                expect(res3.body).to.be.an('object');
+                done();
+              })
+              .catch(err => {
+                done(err);
+              });
+          })
+          .catch(err => {
+            done(err);
+          });
+      })
+      .catch(err => {
+        done(err);
+      });
+  });
+
+  //[REQUEST FORMAT FAILURE]
   it('should fail to remove student from class when poorly formatted id provided', done => {
     // remove student from class
     chai
       .request(server)
       .delete(`/class/345678/removeStudent/`)
+      .set('role', 'admin')
       .send({ studentId: `${new mongoose.Types.ObjectId().toString()}` })
       .then(res => {
         // check for response

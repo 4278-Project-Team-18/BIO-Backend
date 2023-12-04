@@ -18,13 +18,14 @@ export const connectTestsToMongo = async (): Promise<void> => {
 export const getUserFromRequest = (req: RequireAuthProp<Request>) => {
   // for testing purposes
   if (process.env.ENVIRONMENT === 'test') {
-    const role = 'admin';
-    const email = 'test@test.com';
+    const role = req.headers.role as string;
+    const email = req.headers.email || 'test@test.com';
 
     return { role, email };
   }
 
   // for everything else
+  console.log(req.auth);
   const role = (req.auth as any).sessionClaims.publicMetadata.role;
   const email = (req.auth as any).sessionClaims.email;
 

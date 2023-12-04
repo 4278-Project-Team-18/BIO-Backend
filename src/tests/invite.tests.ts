@@ -1,4 +1,4 @@
-import { createTestInvite } from './testData/testData';
+import { createTestAdmin, createTestInvite } from './testData/testData';
 import createServer from '../config/server.config';
 import { connectTestsToMongo } from '../util/tests.util';
 import { InviteStatus } from '../interfaces/invite.interface';
@@ -41,101 +41,44 @@ describe('🧪 Test POST /invite/', () => {
     // create random test invite
     const TEST_INVITE = createTestInvite();
 
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+
     // test request
     chai
       .request(server)
-      .post('/invite/sendInvite')
-      .send(TEST_INVITE)
+      .post('/admin/')
+      .set('role', 'admin')
+      .send(TEST_ADMIN)
       .then(res => {
-        // check for response
         expect(res.status).to.equal(201);
-        expect(res.body).to.be.an('object');
 
-        // check for keys
-        expect(res.body).to.have.property('_id');
-        expect(res.body).to.have.property('email');
-        expect(res.body).to.have.property('role');
-        expect(res.body).to.have.property('status');
+        const admin = res.body;
+        TEST_INVITE.sender = admin._id;
 
-        // check for values
-        expect(res.body.email).to.equal(TEST_INVITE.email);
-        expect(res.body.role).to.equal(TEST_INVITE.role);
-        expect(res.body.status).to.equal(InviteStatus.SENT);
-
-        done();
-      })
-      .catch(error => {
-        done(error);
-      });
-  });
-
-  it('should fail to create invite with missing email', done => {
-    // create random test invite
-    const TEST_INVITE = createTestInvite() as Partial<Invite>;
-    delete TEST_INVITE.email;
-
-    // test request
-    chai
-      .request(server)
-      .post('/invite/sendInvite')
-      .send(TEST_INVITE)
-      .then(res => {
-        // check for response
-        expect(res.status).to.equal(400);
-        expect(res.body).to.be.an('object');
-
-        // check for error
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('Missing keys: email. ');
-
-        done();
-      })
-      .catch(error => {
-        done(error);
-      });
-  });
-
-  it('should fail to create invite with no body', done => {
-    // test request
-    chai
-      .request(server)
-      .post('/invite/sendInvite')
-      .send()
-      .then(res => {
-        // check for response
-        expect(res.status).to.equal(400);
-        expect(res.body).to.be.an('object');
-
-        // check for error
-        expect(res.body).to.have.property('error');
-        expect(res.body.error).to.equal('No invite object provided.');
-
-        done();
-      })
-      .catch(error => {
-        done(error);
-      });
-  });
-});
-
-describe('🧪 Test GET /unp-invite/:inviteId', () => {
-  it('should successfully get invite', done => {
-    chai
-      .request(server)
-      .post('/invite/sendInvite')
-      .send(createTestInvite())
-      .then(res => {
-        const inviteId = res.body._id;
+        // test send invite request
         chai
           .request(server)
-          .get(`/unp-invite/${inviteId}`)
+          .post('/invite/sendInvite')
+          .set('role', 'admin')
+          .set('email', 'admn.cwrubio@gmail.com')
+          .send(TEST_INVITE)
           .then(res => {
-            expect(res.status).to.equal(200);
+            // check for response
+            expect(res.status).to.equal(201);
             expect(res.body).to.be.an('object');
+
+            // check for keys
             expect(res.body).to.have.property('_id');
             expect(res.body).to.have.property('email');
             expect(res.body).to.have.property('role');
             expect(res.body).to.have.property('status');
+
+            // check for values
+            expect(res.body.email).to.equal(TEST_INVITE.email);
+            expect(res.body.role).to.equal(TEST_INVITE.role);
+            expect(res.body.status).to.equal(InviteStatus.SENT);
+
             done();
           })
           .catch(error => {
@@ -144,10 +87,135 @@ describe('🧪 Test GET /unp-invite/:inviteId', () => {
       });
   });
 
+  it('should fail to create invite with missing email', done => {
+    // create random test invite
+    const TEST_INVITE = createTestInvite() as Partial<Invite>;
+    delete TEST_INVITE.email;
+
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+
+    chai
+      .request(server)
+      .post('/admin/')
+      .set('role', 'admin')
+      .send(TEST_ADMIN)
+      .then(res => {
+        expect(res.status).to.equal(201);
+
+        const admin = res.body;
+        TEST_INVITE.sender = admin._id;
+
+        // test request
+        chai
+          .request(server)
+          .post('/invite/sendInvite')
+          .set('role', 'admin')
+          .send(TEST_INVITE)
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(400);
+            expect(res.body).to.be.an('object');
+
+            // check for error
+            expect(res.body).to.have.property('error');
+            expect(res.body.error).to.equal('Missing keys: email. ');
+
+            done();
+          })
+          .catch(error => {
+            done(error);
+          });
+      });
+  });
+
+  it('should fail to create invite with no body', done => {
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+
+    chai
+      .request(server)
+      .post('/admin/')
+      .set('role', 'admin')
+      .send(TEST_ADMIN)
+      .then(res => {
+        expect(res.status).to.equal(201);
+
+        // test request
+        chai
+          .request(server)
+          .post('/invite/sendInvite')
+          .set('role', 'admin')
+          .send()
+          .then(res => {
+            // check for response
+            expect(res.status).to.equal(400);
+            expect(res.body).to.be.an('object');
+
+            // check for error
+            expect(res.body).to.have.property('error');
+            expect(res.body.error).to.equal('No invite object provided.');
+
+            done();
+          })
+          .catch(error => {
+            done(error);
+          });
+      });
+  });
+});
+
+describe('🧪 Test GET /unp-invite/:inviteId', () => {
+  // create random test invite
+  const TEST_INVITE = createTestInvite();
+
+  it('should successfully get invite', done => {
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+
+    chai
+      .request(server)
+      .post('/admin/')
+      .set('role', 'admin')
+      .send(TEST_ADMIN)
+      .then(res => {
+        expect(res.status).to.equal(201);
+
+        const admin = res.body;
+        TEST_INVITE.sender = admin._id;
+
+        chai
+          .request(server)
+          .post('/invite/sendInvite')
+          .set('role', 'admin')
+          .send(TEST_INVITE)
+          .then(res => {
+            const inviteId = res.body._id;
+            chai
+              .request(server)
+              .get(`/unp-invite/${inviteId}`)
+              .set('role', 'admin')
+              .then(res => {
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('_id');
+                expect(res.body).to.have.property('email');
+                expect(res.body).to.have.property('role');
+                expect(res.body).to.have.property('status');
+                done();
+              })
+              .catch(error => {
+                done(error);
+              });
+          });
+      });
+  });
+
   it('should fail to get invite with invalid inviteId', done => {
     chai
       .request(server)
       .get('/unp-invite/123')
+      .set('role', 'admin')
       .then(res => {
         expect(res.status).to.equal(400);
         expect(res.body).to.be.an('object');
@@ -163,26 +231,43 @@ describe('🧪 Test GET /unp-invite/:inviteId', () => {
 
 describe('🧪 Test DELETE /invite/:inviteId', () => {
   it('should successfully delete invite', done => {
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
+    const TEST_INVITE = createTestInvite();
+
     chai
       .request(server)
-      .post('/invite/sendInvite')
-      .send(createTestInvite())
+      .post('/admin/')
+      .set('role', 'admin')
+      .send(TEST_ADMIN)
       .then(res => {
-        const inviteId = res.body._id;
+        expect(res.status).to.equal(201);
+
+        const admin = res.body;
+        TEST_INVITE.sender = admin._id;
         chai
           .request(server)
-          .delete(`/invite/${inviteId}`)
+          .post('/invite/sendInvite')
+          .set('role', 'admin')
+          .send(TEST_INVITE)
           .then(res => {
-            expect(res.status).to.equal(200);
-            expect(res.body).to.be.an('object');
-            expect(res.body).to.have.property('_id');
-            expect(res.body).to.have.property('email');
-            expect(res.body).to.have.property('role');
-            expect(res.body).to.have.property('status');
-            done();
-          })
-          .catch(error => {
-            done(error);
+            const inviteId = res.body._id;
+            chai
+              .request(server)
+              .delete(`/invite/${inviteId}`)
+              .set('role', 'admin')
+              .then(res => {
+                expect(res.status).to.equal(200);
+                expect(res.body).to.be.an('object');
+                expect(res.body).to.have.property('_id');
+                expect(res.body).to.have.property('email');
+                expect(res.body).to.have.property('role');
+                expect(res.body).to.have.property('status');
+                done();
+              })
+              .catch(error => {
+                done(error);
+              });
           });
       });
   });
@@ -191,6 +276,7 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
     chai
       .request(server)
       .delete('/invite/123')
+      .set('role', 'admin')
       .then(res => {
         expect(res.status).to.equal(400);
         expect(res.body).to.be.an('object');
@@ -207,6 +293,7 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
     chai
       .request(server)
       .delete('/invite/')
+      .set('role', 'admin')
       .then(res => {
         expect(res.status).to.equal(404);
         done();
@@ -219,33 +306,47 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
 
 describe('🧪 Test GET /invite/allInvites', () => {
   it('should successfully get all invites', done => {
+    // create random test admin
+    const TEST_ADMIN = createTestAdmin();
     const TEST_INVITE = createTestInvite();
 
     chai
       .request(server)
-      .post('/invite/sendInvite')
-      .send(TEST_INVITE)
+      .post('/admin/')
+      .set('role', 'admin')
+      .send(TEST_ADMIN)
       .then(res => {
         expect(res.status).to.equal(201);
+        TEST_INVITE.sender = res.body._id;
 
         chai
           .request(server)
-          .get(`/invite/`)
-          .then(res1 => {
-            expect(res1.status).to.equal(200);
-            expect(res1.body).to.be.an('array');
-            expect(res1.body[0]).to.have.property('_id');
-            expect(res1.body[0]).to.have.property('email');
-            expect(res1.body[0]).to.have.property('role');
-            expect(res1.body[0]).to.have.property('status');
-            done();
+          .post('/invite/sendInvite')
+          .set('role', 'admin')
+          .send(TEST_INVITE)
+          .then(res => {
+            expect(res.status).to.equal(201);
+
+            chai
+              .request(server)
+              .get(`/invite/`)
+              .set('role', 'admin')
+              .then(res1 => {
+                expect(res1.status).to.equal(200);
+                expect(res1.body).to.be.an('array');
+                expect(res1.body[0]).to.have.property('_id');
+                expect(res1.body[0]).to.have.property('email');
+                expect(res1.body[0]).to.have.property('role');
+                expect(res1.body[0]).to.have.property('status');
+                done();
+              })
+              .catch(error => {
+                done(error);
+              });
           })
           .catch(error => {
             done(error);
           });
-      })
-      .catch(error => {
-        done(error);
       });
   });
 });
