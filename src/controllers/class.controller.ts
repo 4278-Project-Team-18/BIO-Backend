@@ -254,6 +254,47 @@ export const removeStudentFromClass = async (req: Request, res: Response) => {
   }
 };
 
+export const updateEstimatedDelivery = async (req: Request, res: Response) => {
+  // get class id and student id from request body
+  const { newEstimatedDelivery } = req.body;
+
+  // get class id from request params
+  const { classId } = req.params;
+
+  if (!classId) {
+    return res.status(400).json({ error: 'No class id provided.' });
+  }
+
+  if (!newEstimatedDelivery) {
+    return res.status(400).json({ error: 'No estimated delivery date provided' });
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(classId)) {
+    return res.status(400).json({ error: 'Invalid classId.' });
+  }
+
+  try {
+    // find class by id
+    const classObj = await Class.findById(classId);
+
+    // if class is null return 400
+    if (!classObj) {
+      return res.status(400).json({ error: 'Cannot find class object.' });
+    }
+
+    classObj.estimatedDelivery = newEstimatedDelivery;
+
+    // save class to database
+    await classObj.save();
+
+    // return new class
+    return res.status(200).json(classObj);
+  } catch (error: any) {
+    console.log(error);
+    return res.status(500).json({ error: error.message });
+  }
+};
+
 export const removeClassAndStudents = async (req: Request, res: Response) => {
   // get role from request
   const { role } = getUserFromRequest(req);
