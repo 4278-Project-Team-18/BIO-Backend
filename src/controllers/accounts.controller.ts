@@ -135,7 +135,9 @@ export const getAccount = async (req: Request, res: Response) => {
 
   try {
     // get volunteer from database
-    const volunteer = await Volunteer.findOne({ email: accountEmail });
+    const volunteer = await Volunteer.findOne({ email: accountEmail }).populate(
+      'matchedStudents'
+    );
 
     // if volunteer is not null, return
     if (volunteer) {
