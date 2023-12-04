@@ -726,7 +726,7 @@ describe('🧪 Test PATCH /class/:classId/updateEstimatedDelivery', () => {
             // check for response
             expect(res2.status).to.equal(200);
             expect(res2.body).to.be.an('object');
-            expect(res2.body.class.estimatedDelivery).to.equal('18-4-23');
+            expect(res2.body.estimatedDelivery).to.equal('18-4-23');
             done();
           })
           .catch(err => {
