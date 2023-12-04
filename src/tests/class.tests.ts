@@ -707,6 +707,7 @@ describe('🧪 Test PATCH /class/:classId/updateEstimatedDelivery', () => {
     chai
       .request(server)
       .post('/class/')
+      .set('role', 'admin')
       .send(TEST_CLASS)
       .then(res1 => {
         // check for response
@@ -717,6 +718,7 @@ describe('🧪 Test PATCH /class/:classId/updateEstimatedDelivery', () => {
         chai
           .request(server)
           .patch(`/class/${res1.body._id}/updateEstimatedDelivery`)
+          .set('role', 'admin')
           .send({
             newEstimatedDelivery: '18-4-23',
           })
@@ -744,6 +746,7 @@ describe('🧪 Test PATCH /class/:classId/updateEstimatedDelivery', () => {
     chai
       .request(server)
       .post('/class/')
+      .set('role', 'admin')
       .send(TEST_CLASS)
       .then(res1 => {
         // check for response
@@ -754,6 +757,7 @@ describe('🧪 Test PATCH /class/:classId/updateEstimatedDelivery', () => {
         chai
           .request(server)
           .patch(`/class/${res1.body._id}/updateEstimatedDelivery`)
+          .set('role', 'admin')
           .send({})
           .then(res2 => {
             // check for response
