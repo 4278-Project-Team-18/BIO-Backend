@@ -4,7 +4,8 @@ import Teacher from '../models/teacher.model';
 import Admin from '../models/admin.model';
 import Invite from '../models/invite.model';
 import { ApprovalStatus } from '../util/constants';
-import { InviteStatus } from '../interfaces/invite.interface';
+import { InviteStatus, Role } from '../interfaces/invite.interface';
+import { getUserFromRequest } from '../util/tests.util';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
@@ -128,40 +129,57 @@ export const createAccount = async (req: Request, res: Response) => {
 export const getAccount = async (req: Request, res: Response) => {
   const { accountEmail } = req.query;
 
+  const { role } = getUserFromRequest(req);
+
   // check if account id is provided
   if (!accountEmail) {
     return res.status(400).json({ error: 'No account email provided.' });
   }
 
   try {
-    // get volunteer from database
-    const volunteer = await Volunteer.findOne({ email: accountEmail }).populate(
-      'matchedStudents'
-    );
+    if (role === Role.VOLUNTEER) {
+      // get volunteer from database
+      const volunteer = await Volunteer.findOne({ email: accountEmail }).populate(
+        'matchedStudents'
+      );
 
-    // if volunteer is not null, return
-    if (volunteer) {
-      return res.status(200).json(volunteer);
+      // if volunteer is not null, return
+      if (volunteer) {
+        return res.status(200).json(volunteer);
+      }
+
+      // return error if user is not found
+      return res.status(400).json({ error: 'User not found.' });
     }
 
-    // get teacher from database
-    const teacher = await Teacher.findOne({ email: accountEmail });
+    if (role === Role.TEACHER) {
+      // get teacher from database
+      const teacher = await Teacher.findOne({ email: accountEmail });
 
-    // if teacher is not null, return
-    if (teacher) {
-      return res.status(200).json(teacher);
+      // if teacher is not null, return
+      if (teacher) {
+        return res.status(200).json(teacher);
+      }
+
+      // return error if user is not found
+      return res.status(400).json({ error: 'User not found.' });
     }
 
-    // get admin from database
-    const admin = await Admin.findOne({ email: accountEmail });
+    if (role === Role.ADMIN) {
+      // get admin from database
+      const admin = await Admin.findOne({ email: accountEmail });
 
-    // if admin is not null, return
-    if (admin) {
-      return res.status(200).json(admin);
+      // if admin is not null, return
+      if (admin) {
+        return res.status(200).json(admin);
+      }
+
+      // return error if user is not found
+      return res.status(400).json({ error: 'User not found.' });
     }
 
-    // return error if user type is not valid
-    return res.status(400).json({ error: 'User not found.' });
+    // return error if role is not valid
+    return res.status(400).json({ error: 'Invalid role.' });
   } catch (error: any) {
     console.log(error);
     return res.status(500).json({ error: error.message });
