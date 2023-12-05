@@ -7,6 +7,8 @@ import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
+import type { ApprovalStatus } from '../util/constants';
+import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
 dotenv.config();
 
 export const getInvite = async (req: Request, res: Response) => {
@@ -34,7 +36,10 @@ export const getInvite = async (req: Request, res: Response) => {
   }
 };
 
-export const sendInvite = async (req: Request, res: Response) => {
+export const sendInvite = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role: userRole } = getUserFromRequest(req);
 
@@ -46,7 +51,7 @@ export const sendInvite = async (req: Request, res: Response) => {
 
   if (userRole === Role.ADMIN) {
     // get email, role, and status from request body
-    const { email, role, sender: senderId } = req.body;
+    const { email, inviteeRole, senderId } = req.body;
 
     if (!req.body || Object.keys(req.body).length === 0) {
       return res.status(400).json({ error: 'No invite object provided.' });
@@ -73,16 +78,28 @@ export const sendInvite = async (req: Request, res: Response) => {
       const newInvite = new Invite({
         email,
         sender: senderId,
-        role,
+        role: inviteeRole,
         status: InviteStatus.SENT,
       });
 
       // get sender, uncomment when we do auth
       const sender = await Admin.findById(senderId);
 
-      if (process.env.ENVIRONMENT === 'production') {
-        await sendInviteEmail(role, email, sender?._id.toString() || '');
+      if (!sender) {
+        return res.status(400).json({ error: 'No sender found.' });
       }
+
+      const newSender = {
+        email: sender?.email,
+        firstName: sender?.firstName,
+        lastName: sender?.lastName,
+        role: sender?.role as Role,
+        approvalStatus: sender?.approvalStatus as ApprovalStatus,
+      };
+
+      // if (process.env.ENVIRONMENT === 'production') {
+      await sendInviteEmail(email, newSender, newInvite._id.toString());
+      // }
 
       // save new invite to database
       await newInvite.save();
@@ -99,7 +116,10 @@ export const sendInvite = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const removeInvite = async (req: Request, res: Response) => {
+export const removeInvite = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -138,7 +158,10 @@ export const removeInvite = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllInvites = async (req: Request, res: Response) => {
+export const getAllInvites = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 

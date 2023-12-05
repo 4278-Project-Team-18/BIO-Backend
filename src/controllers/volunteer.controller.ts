@@ -7,8 +7,12 @@ import { Role } from '../interfaces/invite.interface';
 import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
+import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
 
-export const createVolunteer = async (req: Request, res: Response) => {
+export const createVolunteer = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -52,7 +56,10 @@ export const createVolunteer = async (req: Request, res: Response) => {
   }
 };
 
-export const getVolunteer = async (req: Request, res: Response) => {
+export const getVolunteer = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -89,7 +96,10 @@ export const getVolunteer = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const getVolunteers = async (req: Request, res: Response) => {
+export const getVolunteers = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -119,7 +129,10 @@ export const getVolunteers = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const changeVolunteerApproval = async (req: Request, res: Response) => {
+export const changeVolunteerApproval = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -180,7 +193,10 @@ export const changeVolunteerApproval = async (req: Request, res: Response) => {
 };
 
 //match volunteer and student
-export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
+export const matchVolunteerAndStudent = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -254,7 +270,10 @@ export const matchVolunteerAndStudent = async (req: Request, res: Response) => {
 };
 
 //unmatch volunteer and student
-export const unmatchVolunteerAndStudent = async (req: Request, res: Response) => {
+export const unmatchVolunteerAndStudent = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 

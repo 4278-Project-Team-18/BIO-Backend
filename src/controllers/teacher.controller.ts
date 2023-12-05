@@ -6,8 +6,12 @@ import { Role } from '../interfaces/invite.interface';
 import { getUserFromRequest } from '../util/tests.util';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
+import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
 
-export const createTeacher = async (req: Request, res: Response) => {
+export const createTeacher = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -48,7 +52,10 @@ export const createTeacher = async (req: Request, res: Response) => {
   }
 };
 
-export const getTeacher = async (req: Request, res: Response) => {
+export const getTeacher = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -82,7 +89,10 @@ export const getTeacher = async (req: Request, res: Response) => {
   }
 };
 
-export const getTeachers = async (req: Request, res: Response) => {
+export const getTeachers = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -109,7 +119,10 @@ export const getTeachers = async (req: Request, res: Response) => {
   }
 };
 
-export const changeTeacherApproval = async (req: Request, res: Response) => {
+export const changeTeacherApproval = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 

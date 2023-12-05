@@ -14,7 +14,10 @@ dotenv.config();
 /**
  * Create a new class with no students and add it to the database.
  */
-export const createClass = async (req: Request, res: Response) => {
+export const createClass = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -118,7 +121,10 @@ export const getClasses = async (
 /**
  * Create a new student and add it to a class.
  */
-export const addStudentToClass = async (req: Request, res: Response) => {
+export const addStudentToClass = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -186,7 +192,10 @@ export const addStudentToClass = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const removeStudentFromClass = async (req: Request, res: Response) => {
+export const removeStudentFromClass = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -254,7 +263,10 @@ export const removeStudentFromClass = async (req: Request, res: Response) => {
   }
 };
 
-export const removeClassAndStudents = async (req: Request, res: Response) => {
+export const removeClassAndStudents = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 

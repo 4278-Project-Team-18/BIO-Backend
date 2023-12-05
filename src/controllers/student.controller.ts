@@ -6,6 +6,7 @@ import { Role } from '../interfaces/invite.interface';
 import multer from 'multer';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
+import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
 
 //upload letter error handling
 export const uploadErrorHandling = (error: any, res: any) => {
@@ -61,7 +62,10 @@ export const createStudent = async (req: Request, res: Response) => {
   }
 };
 
-export const getStudents = async (req: Request, res: Response) => {
+export const getStudents = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -91,7 +95,10 @@ export const getStudents = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const updateStudent = async (req: Request, res: Response) => {
+export const updateStudent = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 

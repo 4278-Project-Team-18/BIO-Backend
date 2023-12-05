@@ -17,7 +17,7 @@ import type { Admin } from '../interfaces/admin.interface';
 export const sendInviteEmail = async (
   email: string,
   sender: Admin | null,
-  inviteID: string
+  inviteId: string
 ) => {
   console.log('called sendInviteEmail');
 
@@ -28,14 +28,14 @@ export const sendInviteEmail = async (
   });
 
   // Base URL for email link
-  const baseURL = 'https://bio-frontend.fly.dev/sign-up/';
+  const baseURL = `https://bio-frontend.fly.dev/sign-up/${inviteId}`;
 
   // const senderAdmin = await Admin.findById(senderId);
 
   // Template data from request body
   const data = {
     senderName: sender?.firstName || 'Albert',
-    link: baseURL + inviteID,
+    link: baseURL,
   };
 
   // Read HTML file
@@ -63,8 +63,8 @@ export const sendInviteEmail = async (
     TemplateData: JSON.stringify(data),
   };
 
+  // send email
   await ses.send(new SendTemplatedEmailCommand(params));
-  console.log('Email sent');
 };
 
 function readHTMLFile(filePath: string): string {

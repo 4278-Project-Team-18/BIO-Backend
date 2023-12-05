@@ -6,8 +6,12 @@ import { getUserFromRequest } from '../util/tests.util';
 import { Role } from '../interfaces/invite.interface';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
+import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
 
-export const createAdmin = async (req: Request, res: Response) => {
+export const createAdmin = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -51,7 +55,7 @@ export const createAdmin = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const getAdmin = async (req: Request, res: Response) => {
+export const getAdmin = async (req: RequireAuthProp<Request>, res: Response) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -87,7 +91,7 @@ export const getAdmin = async (req: Request, res: Response) => {
   }
 };
 
-export const getAdmins = async (req: Request, res: Response) => {
+export const getAdmins = async (req: RequireAuthProp<Request>, res: Response) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 
@@ -116,7 +120,10 @@ export const getAdmins = async (req: Request, res: Response) => {
   return res.status(400).json({ error: 'Invalid role.' });
 };
 
-export const changeAdminApproval = async (req: Request, res: Response) => {
+export const changeAdminApproval = async (
+  req: RequireAuthProp<Request>,
+  res: Response
+) => {
   // get role from request
   const { role } = getUserFromRequest(req);
 

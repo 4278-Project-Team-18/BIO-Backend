@@ -70,9 +70,9 @@ export const VOLUNTEER_ALL_KEYS = [
   'role',
 ];
 
-export const INVITE_REQUIRED_KEYS = ['email', 'role'];
+export const INVITE_REQUIRED_KEYS = ['email', 'inviteeRole'];
 
-export const INVITE_ALL_KEYS = ['email', 'senderId', 'role', 'status', 'sender'];
+export const INVITE_ALL_KEYS = ['email', 'senderId', 'inviteeRole', 'status'];
 
 export const MATCH_REQUIRED_KEYS = ['volunteerId', 'studentIdArray'];
 
