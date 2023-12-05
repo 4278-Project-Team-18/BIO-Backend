@@ -54,7 +54,7 @@ describe('🧪 Test POST /invite/', () => {
         expect(res.status).to.equal(201);
 
         const admin = res.body;
-        TEST_INVITE.sender = admin._id;
+        TEST_INVITE.senderId = admin._id;
 
         // test send invite request
         chai
@@ -76,7 +76,7 @@ describe('🧪 Test POST /invite/', () => {
 
             // check for values
             expect(res.body.email).to.equal(TEST_INVITE.email);
-            expect(res.body.role).to.equal(TEST_INVITE.role);
+            expect(res.body.role).to.equal(TEST_INVITE.inviteeRole);
             expect(res.body.status).to.equal(InviteStatus.SENT);
 
             done();
@@ -104,7 +104,7 @@ describe('🧪 Test POST /invite/', () => {
         expect(res.status).to.equal(201);
 
         const admin = res.body;
-        TEST_INVITE.sender = admin._id;
+        TEST_INVITE.senderId = admin._id;
 
         // test request
         chai
@@ -182,7 +182,7 @@ describe('🧪 Test GET /unp-invite/:inviteId', () => {
         expect(res.status).to.equal(201);
 
         const admin = res.body;
-        TEST_INVITE.sender = admin._id;
+        TEST_INVITE.senderId = admin._id;
 
         chai
           .request(server)
@@ -244,7 +244,7 @@ describe('🧪 Test DELETE /invite/:inviteId', () => {
         expect(res.status).to.equal(201);
 
         const admin = res.body;
-        TEST_INVITE.sender = admin._id;
+        TEST_INVITE.senderId = admin._id;
         chai
           .request(server)
           .post('/invite/sendInvite')
@@ -317,7 +317,7 @@ describe('🧪 Test GET /invite/allInvites', () => {
       .send(TEST_ADMIN)
       .then(res => {
         expect(res.status).to.equal(201);
-        TEST_INVITE.sender = res.body._id;
+        TEST_INVITE.senderId = res.body._id;
 
         chai
           .request(server)
