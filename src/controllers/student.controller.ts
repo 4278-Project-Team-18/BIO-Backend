@@ -260,37 +260,47 @@ export const uploadStudentLetter = async (req: any, res: Response) => {
 };
 
 export const addBookLink = async (req: any, res: Response) => {
-  const { studentId } = req.params;
+  const { role } = getUserFromRequest(req);
 
-  const { newBookLink } = req.body;
-
-  //check if studentId is present
-  if (!studentId) {
-    return res.status(400).json({ error: 'no student ID provided' });
+  if (role === Role.TEACHER) {
+    return res.status(403).send({
+      message: 'You are not authorized to access this endpoint.',
+    });
   }
 
-  if (!newBookLink) {
-    return res.status(400).json({ error: 'no new book link provided' });
-  }
+  if (role === Role.ADMIN || role === Role.VOLUNTEER) {
+    const { studentId } = req.params;
 
-  //check if studentId is valid
-  if (!mongoose.Types.ObjectId.isValid(studentId)) {
-    return res.status(400).json({ error: 'Invalid student ID' });
-  }
+    const { newBookLink } = req.body;
 
-  try {
-    const studentObj = await Student.findById(studentId);
-
-    if (!studentObj) {
-      return res.status(400).json({ error: 'failed to find student object' });
+    //check if studentId is present
+    if (!studentId) {
+      return res.status(400).json({ error: 'no student ID provided' });
     }
 
-    studentObj.assignedBookLink = newBookLink;
-    await studentObj.save();
+    if (!newBookLink) {
+      return res.status(400).json({ error: 'no new book link provided' });
+    }
 
-    return res.status(200).json(studentObj);
-  } catch (error: any) {
-    console.log(error);
-    return res.status(500).json({ error: error.message });
+    //check if studentId is valid
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return res.status(400).json({ error: 'Invalid student ID' });
+    }
+
+    try {
+      const studentObj = await Student.findById(studentId);
+
+      if (!studentObj) {
+        return res.status(400).json({ error: 'failed to find student object' });
+      }
+
+      studentObj.assignedBookLink = newBookLink;
+      await studentObj.save();
+
+      return res.status(200).json(studentObj);
+    } catch (error: any) {
+      console.log(error);
+      return res.status(500).json({ error: error.message });
+    }
   }
 };
