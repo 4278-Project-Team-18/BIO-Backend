@@ -75,7 +75,7 @@ export const createTestVolunteer = () => {
 export const createTestInvite = (role?: Role) =>
   ({
     email: faker.internet.email(),
-    role: role || randomRole(),
+    inviteeRole: role || randomRole(),
   }) as Invite;
 
 export const randomApprovalStatus = () => {
