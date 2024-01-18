@@ -163,7 +163,7 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
 
   if (role === Role.VOLUNTEER || role === Role.ADMIN) {
     const { studentId } = req.params;
-    const { volunteerId } = req.body;
+    const { volunteerId, volunteerLetterStringFormat } = req.body;
 
     if (!studentId) {
       return res.status(400).json({ error: 'no student ID provided' });
@@ -171,6 +171,12 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
 
     if (!volunteerId) {
       return res.status(400).json({ error: 'no volunteer ID provided ' });
+    }
+
+    if (!volunteerLetterStringFormat) {
+      return res
+        .status(400)
+        .json({ error: 'no volunteer letter string format provided' });
     }
 
     if (!mongoose.Types.ObjectId.isValid(studentId)) {
@@ -200,6 +206,7 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
 
       //update object and save
       studentObj.volunteerLetterLink = response.Location;
+      studentObj.volunteerLetterString = volunteerLetterStringFormat;
       await studentObj.save();
 
       return res.status(201).json(studentObj);
