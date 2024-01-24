@@ -1,7 +1,6 @@
 import { createTestStudent, createTestVolunteer } from './testData/testData';
 import createServer from '../config/server.config';
-import { connectTestsToMongo } from '../util/tests.util';
-import mongoose from 'mongoose';
+import logger from '../config/logger.config';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import chai, { expect } from 'chai';
@@ -19,19 +18,12 @@ let server: Server;
 
 // before tests: connect to mongodb and open mock server
 before(async () => {
-  await connectTestsToMongo();
   server = app.listen(6001);
 });
 
 // after tests: close mongodb connection and close mock server
 after(async () => {
-  try {
-    await mongoose.connection.close();
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await server.close();
-  }
+  await server.close();
 });
 
 describe('🧪 Test POST /student/', () => {
@@ -359,7 +351,7 @@ describe('🧪 Test student letter upload', () => {
             done();
           })
           .catch(err => {
-            console.log(err);
+            logger.info(err);
             done(err);
           });
       })

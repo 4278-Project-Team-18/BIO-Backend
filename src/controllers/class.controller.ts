@@ -3,6 +3,7 @@ import Student from '../models/student.model';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Teacher from '../models/teacher.model';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import { Role } from '../interfaces/invite.interface';
 import Volunteer from '../models/volunteer.model';
 import mongoose from 'mongoose';
@@ -67,7 +68,7 @@ export const createClass = async (
       // return new class
       return res.status(201).json(newClass);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -113,7 +114,7 @@ export const getClasses = async (
 
     return res.status(400).json({ error: 'Invalid role.' });
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -184,7 +185,7 @@ export const addStudentToClass = async (
       // return new class
       return res.status(201).json(newStudent);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -257,7 +258,7 @@ export const removeStudentFromClass = async (
         studentId: studentObj._id,
       });
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -302,7 +303,7 @@ export const updateEstimatedDelivery = async (
     // return new class
     return res.status(200).json(classObj);
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -365,7 +366,7 @@ export const removeClassAndStudents = async (
       // return new class
       return res.status(200).json(classObj);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }

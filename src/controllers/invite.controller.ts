@@ -4,6 +4,7 @@ import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { sendInviteEmail } from '../util/email';
 import Admin from '../models/admin.model';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
@@ -31,7 +32,7 @@ export const getInvite = async (req: Request, res: Response) => {
     // return invite
     return res.status(200).json(invite);
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -108,7 +109,7 @@ export const sendInvite = async (
 
       return res.status(201).json(newInvite);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -152,7 +153,7 @@ export const removeInvite = async (
       // return invite
       return res.status(200).json(invite);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -183,7 +184,7 @@ export const getAllInvites = async (
       // return invites
       return res.status(200).json(invites);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -217,7 +218,7 @@ export const openInvite = async (req: Request, res: Response) => {
     // return invite
     return res.status(200).json(invite);
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ error: error.message });
   }
 };

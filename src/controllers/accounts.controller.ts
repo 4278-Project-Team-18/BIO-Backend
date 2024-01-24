@@ -6,6 +6,7 @@ import Invite from '../models/invite.model';
 import { ApprovalStatus } from '../util/constants';
 import { InviteStatus, Role } from '../interfaces/invite.interface';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
@@ -117,7 +118,7 @@ export const createAccount = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Invalid user type.' });
   } catch (error: any) {
     // if the error is a duplicate email error, return a more specific error message
-    console.log(error);
+    logger.error(error);
     if (error.code === 11000) {
       return res.status(400).json({ error: 'Email already exists.' });
     }
@@ -181,7 +182,7 @@ export const getAccount = async (req: Request, res: Response) => {
     // return error if role is not valid
     return res.status(400).json({ error: 'Invalid role.' });
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ error: error.message });
   }
 };

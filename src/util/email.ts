@@ -19,8 +19,6 @@ export const sendInviteEmail = async (
   sender: Admin | null,
   inviteId: string
 ) => {
-  console.log('called sendInviteEmail');
-
   // auth config
   const ses = new SESClient({
     region: process.env.REGION,
@@ -52,7 +50,6 @@ export const sendInviteEmail = async (
 
   // Create Email Template
   await ses.send(new UpdateTemplateCommand(emailTemplate));
-  console.log('Email template updated');
 
   const params = {
     Template: 'BIOInvitation',

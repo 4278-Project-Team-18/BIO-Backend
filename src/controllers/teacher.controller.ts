@@ -4,6 +4,7 @@ import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Invite from '../models/invite.model';
 import { Role } from '../interfaces/invite.interface';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
@@ -46,7 +47,7 @@ export const createTeacher = async (
       // return new teacher
       return res.status(201).json(newTeacher);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -83,7 +84,7 @@ export const getTeacher = async (
       // return teachers list
       return res.status(200).json(teacher);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -113,7 +114,7 @@ export const getTeachers = async (
       // return teachers list
       return res.status(200).json(teachers);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }

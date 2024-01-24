@@ -1,3 +1,4 @@
+import logger from '../config/logger.config';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { ConnectOptions } from 'mongoose';
@@ -9,12 +10,12 @@ const connectToMongoDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     } as ConnectOptions);
-    console.log(
+    logger.info(
       '🔌 [MONGODB]: Connected to MongoDB at ' + connection.connection.host
     );
     return connection;
   } catch (error) {
-    console.log('❌ [MONGODB]: ' + error);
+    logger.error('❌ [MONGODB]: ' + error);
   }
 };
 

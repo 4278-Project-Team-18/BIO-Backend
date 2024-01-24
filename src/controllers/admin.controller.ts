@@ -3,6 +3,7 @@ import Invite from '../models/invite.model';
 import { ApprovalStatus } from '../util/constants';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import { Role } from '../interfaces/invite.interface';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
@@ -47,7 +48,7 @@ export const createAdmin = async (
       // return new admin
       return res.status(201).json(newAdmin);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -85,7 +86,7 @@ export const getAdmin = async (req: RequireAuthProp<Request>, res: Response) => 
       // return admins
       return res.status(200).json(admin);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -112,7 +113,7 @@ export const getAdmins = async (req: RequireAuthProp<Request>, res: Response) =>
       // return admins list
       return res.status(200).json(admins);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }

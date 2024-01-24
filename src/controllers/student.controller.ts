@@ -2,6 +2,7 @@ import Student from '../models/student.model';
 import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import { uploadToS3 } from '../util/s3-upload';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import { Role } from '../interfaces/invite.interface';
 import multer from 'multer';
 import mongoose from 'mongoose';
@@ -57,7 +58,7 @@ export const createStudent = async (req: Request, res: Response) => {
     // return new student
     return res.status(201).json(newStudent);
   } catch (error: any) {
-    console.log(error);
+    logger.error(error);
     return res.status(500).json({ error: error.message });
   }
 };
@@ -87,7 +88,7 @@ export const getStudents = async (
       // return new class
       return res.status(200).json(students);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -143,7 +144,7 @@ export const updateStudent = async (
 
       return res.status(200).json(updatedStudent);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -204,7 +205,7 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
 
       return res.status(201).json(studentObj);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -251,7 +252,7 @@ export const uploadStudentLetter = async (req: any, res: Response) => {
 
       return res.status(201).json(studentObj);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -299,7 +300,7 @@ export const addBookLink = async (req: any, res: Response) => {
 
       return res.status(200).json(studentObj);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }

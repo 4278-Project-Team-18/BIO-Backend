@@ -1,7 +1,5 @@
 import { createTestTeacher } from './testData/testData';
 import createServer from '../config/server.config';
-import { connectTestsToMongo } from '../util/tests.util';
-import mongoose from 'mongoose';
 import chaiHttp from 'chai-http';
 import dotenv from 'dotenv';
 import chai, { expect } from 'chai';
@@ -20,21 +18,13 @@ let server: Server;
 
 // before tests: connect to mongodb and open mock server
 before(async () => {
-  await connectTestsToMongo();
   server = app.listen(6003);
 });
 
 // after tests: close mongodb connection and close mock server
 after(async () => {
-  try {
-    await mongoose.connection.close();
-  } catch (error) {
-    console.error(error);
-  } finally {
-    await server.close();
-  }
+  await server.close();
 });
-
 describe('🧪 Test POST /teacher/', () => {
   it('should successfully create teacher', done => {
     // create random test teacher
@@ -121,85 +111,6 @@ describe('🧪 Test POST /teacher/', () => {
         done(err);
       });
   });
-
-  // TODO: This test is failing because the teachers are being created not invited therefore the invite does not exist
-  // it('should approve teacher', done => {
-  //   const TEST_TEACHER = createTestTeacher();
-  //   // test request
-  //   chai
-  //     .request(server)
-  //     .post('/teacher/')
-  //     .send(TEST_TEACHER)
-  //     .then(res => {
-  //       // check for response
-  //       expect(res.status).to.equal(201);
-  //       expect(res.body).to.be.an('object');
-
-  //       // approve volunteer
-  //       chai
-  //         .request(server)
-  //         .patch(`/teacher/${res.body._id}/changeTeacherApprovalStatus`)
-  //         .send({ newApprovalStatus: ApprovalStatus.APPROVED })
-  //         .then(res => {
-  //           // check for response
-  //           expect(res.status).to.equal(200);
-  //           expect(res.body).to.be.an('object');
-
-  //           // check for keys
-  //           expect(res.body).to.have.property('approvalStatus');
-
-  //           // check for values
-  //           expect(res.body.approvalStatus).to.equal('approved');
-
-  //           done();
-  //         })
-  //         .catch(err => {
-  //           done(err);
-  //         });
-  //     })
-  //     .catch(err => {
-  //       done(err);
-  //     });
-  // });
-
-  // it('should reject teacher', done => {
-  //   const TEST_TEACHER = createTestTeacher();
-  //   // test request
-  //   chai
-  //     .request(server)
-  //     .post('/teacher/')
-  //     .send(TEST_TEACHER)
-  //     .then(res => {
-  //       // check for response
-  //       expect(res.status).to.equal(201);
-  //       expect(res.body).to.be.an('object');
-
-  //       // approve volunteer
-  //       chai
-  //         .request(server)
-  //         .patch(`/teacher/${res.body._id}/changeTeacherApprovalStatus`)
-  //         .send({ newApprovalStatus: ApprovalStatus.REJECTED })
-  //         .then(res => {
-  //           // check for response
-  //           expect(res.status).to.equal(200);
-  //           expect(res.body).to.be.an('object');
-
-  //           // check for keys
-  //           expect(res.body).to.have.property('approvalStatus');
-
-  //           // check for values
-  //           expect(res.body.approvalStatus).to.equal('rejected');
-
-  //           done();
-  //         })
-  //         .catch(err => {
-  //           done(err);
-  //         });
-  //     })
-  //     .catch(err => {
-  //       done(err);
-  //     });
-  // });
 
   it('should fail to change teacher status with invalid id', done => {
     chai

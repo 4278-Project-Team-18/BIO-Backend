@@ -1,5 +1,6 @@
 import connectToMongoDB from './config/mongodb.config';
 import createServer from './config/server.config';
+import logger from './config/logger.config';
 import type { StrictAuthProp } from '@clerk/clerk-sdk-node';
 
 declare global {
@@ -19,9 +20,9 @@ const app = createServer();
 const port = Number(process.env.PORT) || 8080;
 const host = process.env.HOST || '0.0.0.0';
 
-console.log('PORT: ', port, 'HOST: ', host);
+logger.info('PORT: ', port, 'HOST: ', host);
 
 // start our server
 app.listen(port, host, undefined, () => {
-  console.log(`Server started on port ${port}`);
+  logger.info(`Server started on port ${port}`);
 });

@@ -5,6 +5,7 @@ import { KeyValidationType, verifyKeys } from '../util/validation.util';
 import Invite from '../models/invite.model';
 import { Role } from '../interfaces/invite.interface';
 import { getUserFromRequest } from '../util/tests.util';
+import logger from '../config/logger.config';
 import mongoose from 'mongoose';
 import type { Request, Response } from 'express';
 import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
@@ -50,7 +51,7 @@ export const createVolunteer = async (
       // return new Volunteer
       return res.status(201).json(newVolunteer);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -88,7 +89,7 @@ export const getVolunteer = async (
       // return all volunteers
       return res.status(200).json(volunteer);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
@@ -121,7 +122,7 @@ export const getVolunteers = async (
       // return all volunteers
       return res.status(200).json(volunteers);
     } catch (error: any) {
-      console.log(error);
+      logger.error(error);
       return res.status(500).json({ error: error.message });
     }
   }
