@@ -6,7 +6,6 @@ import Invite from '../models/invite.model';
 import { ApprovalStatus } from '../util/constants';
 import { InviteStatus, Role } from '../interfaces/invite.interface';
 import logger from '../config/logger.config';
-import { getUserFromRequest } from '../util/tests.util';
 import { clerkClient } from '@clerk/clerk-sdk-node';
 import dotenv from 'dotenv';
 import type { Request, Response } from 'express';
@@ -128,9 +127,7 @@ export const createAccount = async (req: Request, res: Response) => {
 };
 
 export const getAccount = async (req: Request, res: Response) => {
-  const { accountEmail } = req.query;
-
-  const { role } = getUserFromRequest(req);
+  const { accountEmail, role } = req.query;
 
   // check if account id is provided
   if (!accountEmail) {
