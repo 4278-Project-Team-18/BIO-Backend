@@ -29,6 +29,10 @@ const studentSchema = new mongoose.Schema({
     type: Schema.Types.ObjectId,
     ref: 'Volunteer',
   },
+  volunteerLetterString: {
+    type: String,
+    default: '',
+  },
 });
 
 const Student = mongoose.model('Student', studentSchema);

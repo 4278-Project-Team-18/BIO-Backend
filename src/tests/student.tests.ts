@@ -423,6 +423,10 @@ describe('🧪 Test student letter upload', () => {
                   .post(`/student/${studentRes.body._id}/uploadVolunteerLetter`)
                   .set('role', 'admin')
                   .field('volunteerId', volunteerRes.body._id)
+                  .field(
+                    'volunteerLetterStringFormat',
+                    'dear mr michael, cdefghijklmnop'
+                  )
                   .attach('file', __dirname + '/chai-test.pdf', 'chai-test.pdf')
                   .then(res => {
                     // check for response
@@ -431,6 +435,9 @@ describe('🧪 Test student letter upload', () => {
 
                     // check for matching fields
                     expect(res.body.volunteerLetterLink.includes('amazonaws'));
+                    expect(res.body.volunteerLetterString).to.equal(
+                      'dear mr michael, cdefghijklmnop'
+                    );
                     // end test
                     done();
                   })
