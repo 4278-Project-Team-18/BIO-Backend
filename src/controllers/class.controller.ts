@@ -6,6 +6,7 @@ import { getUserFromRequest } from '../util/tests.util';
 import logger from '../config/logger.config';
 import { Role } from '../interfaces/invite.interface';
 import Volunteer from '../models/volunteer.model';
+import { deleteFromS3 } from '../util/s3-delete';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import type { RequireAuthProp } from '@clerk/clerk-sdk-node';
@@ -243,6 +244,16 @@ export const removeStudentFromClass = async (
         return res.status(400).json({ error: 'Cannot find student object.' });
       }
 
+      // remove student letter from s3
+      if (studentObj.studentLetterLink) {
+        await deleteFromS3(true, studentId);
+      }
+
+      // remove volunteer letter from s3
+      if (studentObj.volunteerLetterLink) {
+        await deleteFromS3(false, studentId);
+      }
+
       // remove student id from class
       classObj.students = classObj.students.filter(
         (student: any) => student._id.toString() !== studentId
@@ -250,6 +261,7 @@ export const removeStudentFromClass = async (
 
       // save class to database
       await classObj.save();
+
       await studentObj.deleteOne();
 
       // return new class
@@ -340,6 +352,16 @@ export const removeClassAndStudents = async (
       // if class is null return 400
       if (!classObj) {
         return res.status(400).json({ error: 'Cannot find class object.' });
+      }
+
+      // remove student letters from s3
+      for (const student of classObj.students) {
+        await deleteFromS3(true, student);
+      }
+
+      // remove volunteer letters from s3
+      for (const student of classObj.students) {
+        await deleteFromS3(false, student);
       }
 
       // remove the students from the database
