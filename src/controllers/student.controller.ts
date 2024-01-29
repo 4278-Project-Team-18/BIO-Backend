@@ -204,6 +204,8 @@ export const uploadVolunteerLetter = async (req: any, res: Response) => {
       //call upload with isStudent = false since this is a volunteer letter
       const response = await uploadToS3(req.file, false, studentObj);
 
+      console.log(response.Location);
+
       //update object and save
       studentObj.volunteerLetterLink = response.Location;
       studentObj.volunteerLetterString = volunteerLetterStringFormat;

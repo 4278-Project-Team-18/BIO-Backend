@@ -25,7 +25,6 @@ export const getUserFromRequest = (req: RequireAuthProp<Request>) => {
   }
 
   // for everything else
-  console.log(req.auth);
   const role = (req.auth as any).sessionClaims.publicMetadata.role;
   const email = (req.auth as any).sessionClaims.email;
 

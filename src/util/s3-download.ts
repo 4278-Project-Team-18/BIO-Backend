@@ -18,6 +18,5 @@ export const uploadToS3 = async (isStudent: boolean, mongoObj: any) => {
     Bucket: bucketName,
     Key: key,
   });
-  console.log(signedUrl);
   return signedUrl;
 };
